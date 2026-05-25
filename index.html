@@ -149,6 +149,25 @@ tailwind.config = {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
   }
+  @keyframes confettiFall {
+    to {
+      transform: translateY(110vh) rotate(720deg);
+      opacity: 0.7;
+    }
+  }
+  @keyframes coinPop {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); opacity: 1; }
+  }
+  @keyframes xpFloat {
+    0% { transform: translateY(0) scale(0); opacity: 0; }
+    20% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+    100% { transform: translateY(-60px) scale(1); opacity: 0; }
+  }
+  @keyframes progressFill {
+    from { width: 0%; }
+  }
   .animate-float { animation: float 3s ease-in-out infinite; }
   .animate-wiggle { animation: wiggle 0.4s ease-in-out infinite; }
   .animate-spin-slow { animation: spin-slow 8s linear infinite; }
@@ -657,6 +676,92 @@ const translations = {
     'common.month': 'month',
     'common.year': 'year',
     'common.contact': 'contact us',
+
+    // rewards system
+    'rewards.label': 'PROGRESS',
+    'rewards.title': 'your journey',
+    'rewards.level': 'Level',
+    'rewards.xp': 'XP',
+    'rewards.coins': 'paws',
+    'rewards.toNext': 'to next level',
+    'rewards.streak': 'day streak',
+    'rewards.streakAlt': 'streak',
+    'rewards.openShop': '🛍️ OPEN SHOP',
+    'rewards.achievements': '🏆 ACHIEVEMENTS',
+    'rewards.recentEarnings': 'recent',
+    'rewards.levelUp': 'LEVEL UP!',
+    'rewards.youReached': 'you reached',
+    'rewards.coinsEarned': 'paws earned',
+    'rewards.continue': 'continue ~',
+    'rewards.tab': 'rewards',
+
+    // shop
+    'shop.title': 'paws shop',
+    'shop.subtitle': 'spend your paws on goodies 🐾',
+    'shop.balance': 'your balance',
+    'shop.owned': '✓ owned',
+    'shop.buy': 'buy',
+    'shop.equip': 'equip',
+    'shop.equipped': '✓ equipped',
+    'shop.notEnough': 'not enough paws',
+    'shop.confirm': 'spend',
+    'shop.cancel': 'cancel',
+    'shop.confirmTitle': 'confirm purchase',
+    'shop.confirmBody': 'spend {coins} paws on',
+    'shop.cat.title': 'cat skins',
+    'shop.theme.title': 'themes',
+    'shop.sticker.title': 'sticker packs',
+    'shop.badge.title': 'badges',
+
+    // achievements
+    'ach.title': 'achievements',
+    'ach.unlocked': 'unlocked',
+    'ach.locked': 'locked',
+    'ach.firstTask': 'First Steps',
+    'ach.firstTaskDesc': 'complete your first task',
+    'ach.tenTasks': 'Getting It Done',
+    'ach.tenTasksDesc': 'complete 10 tasks',
+    'ach.fiftyTasks': 'Task Master',
+    'ach.fiftyTasksDesc': 'complete 50 tasks',
+    'ach.hundredTasks': 'Centurion',
+    'ach.hundredTasksDesc': 'complete 100 tasks',
+    'ach.firstPomo': 'Focus Found',
+    'ach.firstPomoDesc': 'finish 1 pomodoro',
+    'ach.tenPomos': 'Deep Work',
+    'ach.tenPomosDesc': 'finish 10 pomodoros',
+    'ach.fiftyPomos': 'Focus Beast',
+    'ach.fiftyPomosDesc': 'finish 50 pomodoros',
+    'ach.threeDayStreak': 'Show Up',
+    'ach.threeDayStreakDesc': '3-day streak',
+    'ach.sevenDayStreak': 'Consistent',
+    'ach.sevenDayStreakDesc': '7-day streak',
+    'ach.thirtyDayStreak': 'Untouchable',
+    'ach.thirtyDayStreakDesc': '30-day streak',
+    'ach.fiveMoods': 'Self Aware',
+    'ach.fiveMoodsDesc': 'log 5 moods',
+    'ach.tenChats': 'Mochi Friend',
+    'ach.tenChatsDesc': 'chat with Mochi 10 times',
+    'ach.level5': 'Rising',
+    'ach.level5Desc': 'reach Level 5',
+    'ach.level10': 'Veteran',
+    'ach.level10Desc': 'reach Level 10',
+    'ach.microTask': 'Slice it Up',
+    'ach.microTaskDesc': 'use Micro-Tasks 5 times',
+
+    // micro tasks
+    'micro.button': '✂️ break down',
+    'micro.title': 'micro-tasks breakdown',
+    'micro.sub': "let's slice this into doable pieces 🐾",
+    'micro.original': 'original task',
+    'micro.thinking': 'mochi is slicing it up...',
+    'micro.generate': '✂️ slice it up',
+    'micro.replace': 'replace original with these',
+    'micro.add': 'add as new tasks',
+    'micro.keep': 'keep original too',
+    'micro.regenerate': '↻ try again',
+    'micro.cancel': 'cancel',
+    'micro.empty': 'no tasks to slice yet 🐾',
+    'micro.aiNeeded': 'AI works better with API key set up. you can still use basic breakdown.',
   },
   vi: {
     'nav.features': 'tính năng',
@@ -945,6 +1050,88 @@ const translations = {
     'common.month': 'tháng',
     'common.year': 'năm',
     'common.contact': 'liên hệ',
+
+    'rewards.label': 'TIẾN ĐỘ',
+    'rewards.title': 'hành trình của bạn',
+    'rewards.level': 'Level',
+    'rewards.xp': 'XP',
+    'rewards.coins': 'paws',
+    'rewards.toNext': 'để lên level',
+    'rewards.streak': 'ngày liên tiếp',
+    'rewards.streakAlt': 'streak',
+    'rewards.openShop': '🛍️ MỞ SHOP',
+    'rewards.achievements': '🏆 THÀNH TÍCH',
+    'rewards.recentEarnings': 'gần đây',
+    'rewards.levelUp': 'LÊN CẤP!',
+    'rewards.youReached': 'bạn đã đạt',
+    'rewards.coinsEarned': 'paws nhận được',
+    'rewards.continue': 'tiếp tục ~',
+    'rewards.tab': 'thưởng',
+
+    'shop.title': 'shop paws',
+    'shop.subtitle': 'tiêu paws đổi đồ 🐾',
+    'shop.balance': 'số dư',
+    'shop.owned': '✓ đã có',
+    'shop.buy': 'mua',
+    'shop.equip': 'dùng',
+    'shop.equipped': '✓ đang dùng',
+    'shop.notEnough': 'không đủ paws',
+    'shop.confirm': 'mua',
+    'shop.cancel': 'hủy',
+    'shop.confirmTitle': 'xác nhận mua',
+    'shop.confirmBody': 'tiêu {coins} paws cho',
+    'shop.cat.title': 'cat skins',
+    'shop.theme.title': 'theme',
+    'shop.sticker.title': 'gói sticker',
+    'shop.badge.title': 'huy hiệu',
+
+    'ach.title': 'thành tích',
+    'ach.unlocked': 'đã mở',
+    'ach.locked': 'chưa mở',
+    'ach.firstTask': 'Bước đầu tiên',
+    'ach.firstTaskDesc': 'hoàn thành task đầu tiên',
+    'ach.tenTasks': 'Cứ thế làm thôi',
+    'ach.tenTasksDesc': 'hoàn thành 10 tasks',
+    'ach.fiftyTasks': 'Bậc thầy task',
+    'ach.fiftyTasksDesc': 'hoàn thành 50 tasks',
+    'ach.hundredTasks': 'Trăm trận trăm thắng',
+    'ach.hundredTasksDesc': 'hoàn thành 100 tasks',
+    'ach.firstPomo': 'Focus đầu tiên',
+    'ach.firstPomoDesc': 'xong 1 pomodoro',
+    'ach.tenPomos': 'Deep Work',
+    'ach.tenPomosDesc': 'xong 10 pomodoros',
+    'ach.fiftyPomos': 'Quái vật focus',
+    'ach.fiftyPomosDesc': 'xong 50 pomodoros',
+    'ach.threeDayStreak': 'Đều đặn',
+    'ach.threeDayStreakDesc': 'streak 3 ngày',
+    'ach.sevenDayStreak': 'Bền bỉ',
+    'ach.sevenDayStreakDesc': 'streak 7 ngày',
+    'ach.thirtyDayStreak': 'Bất khả xâm phạm',
+    'ach.thirtyDayStreakDesc': 'streak 30 ngày',
+    'ach.fiveMoods': 'Hiểu mình',
+    'ach.fiveMoodsDesc': 'log 5 moods',
+    'ach.tenChats': 'Bạn thân Mochi',
+    'ach.tenChatsDesc': 'chat với Mochi 10 lần',
+    'ach.level5': 'Đang lên',
+    'ach.level5Desc': 'đạt Level 5',
+    'ach.level10': 'Veteran',
+    'ach.level10Desc': 'đạt Level 10',
+    'ach.microTask': 'Cắt nhỏ ra',
+    'ach.microTaskDesc': 'dùng Micro-Tasks 5 lần',
+
+    'micro.button': '✂️ rã nhỏ',
+    'micro.title': 'rã task thành micro-tasks',
+    'micro.sub': 'cắt nhỏ ra cho dễ làm 🐾',
+    'micro.original': 'task gốc',
+    'micro.thinking': 'mochi đang cắt...',
+    'micro.generate': '✂️ rã nhỏ',
+    'micro.replace': 'thay task gốc bằng những cái này',
+    'micro.add': 'thêm như task mới',
+    'micro.keep': 'giữ luôn task gốc',
+    'micro.regenerate': '↻ thử lại',
+    'micro.cancel': 'hủy',
+    'micro.empty': 'chưa có task để rã 🐾',
+    'micro.aiNeeded': 'AI hoạt động tốt hơn khi có API key. bạn vẫn có thể dùng rã cơ bản.',
   },
 };
 
@@ -958,10 +1145,10 @@ const getMessyStyle = (messyLevel, seed = 1) => {
   if (level <= 1) return {};
 
   const rotations = {
-    2: [-0.6, 0.6, -0.4, 0.5],     // cozy: very subtle
-    3: [-1.2, 1.3, -1.0, 1.1],     // casual: mild
-    4: [-2.2, 2.5, -2.0, 2.3],     // messy: moderate
-    5: [-3.5, 4.0, -3.8, 3.6],     // chaos: heavy
+    2: [-0.6, 0.6, -0.4, 0.5],
+    3: [-1.2, 1.3, -1.0, 1.1],
+    4: [-2.2, 2.5, -2.0, 2.3],
+    5: [-3.5, 4.0, -3.8, 3.6],
   };
 
   const baseRot = rotations[level]?.[(seed - 1) % 4] || 0;
@@ -978,32 +1165,15 @@ const getMessyStyle = (messyLevel, seed = 1) => {
     };
   }
 
-  return {
-    transform: `rotate(${baseRot}deg)`,
-  };
+  return { transform: `rotate(${baseRot}deg)` };
 };
 
 const getMessyLabel = (messyLevel, lang) => {
   const level = Math.min(5, Math.max(1, messyLevel));
   if (lang === 'vi') {
-    const labels = {
-      1: 'gọn gàng',
-      2: 'ngăn nắp',
-      3: 'vừa phải',
-      4: 'lộn xộn',
-      5: 'hỗn loạn'
-    };
-    return labels[level];
-  } else {
-    const labels = {
-      1: 'clean',
-      2: 'cozy',
-      3: 'casual',
-      4: 'messy',
-      5: 'chaos'
-    };
-    return labels[level];
+    return { 1: 'gọn gàng', 2: 'ngăn nắp', 3: 'vừa phải', 4: 'lộn xộn', 5: 'hỗn loạn' }[level];
   }
+  return { 1: 'clean', 2: 'cozy', 3: 'casual', 4: 'messy', 5: 'chaos' }[level];
 };
 
 /* =================================================================
@@ -1047,6 +1217,107 @@ const useGlobalStorage = (key, defaultVal) => {
     saveStore(store);
   }, [key, val]);
   return [val, setVal];
+};
+
+/* =================================================================
+   REWARDS ENGINE — XP, levels, paws (coins), achievements, streaks
+================================================================= */
+const XP_PER_TASK = 10;
+const XP_PER_POMO = 15;
+const XP_PER_MOOD = 5;
+const XP_PER_MICRO = 3;
+const COINS_PER_TASK = 2;
+const COINS_PER_POMO = 5;
+const COINS_PER_LEVEL = 50;
+
+// XP curve: level N requires N * 100 cumulative XP (level 1 = 0, level 2 = 100, level 3 = 300, ...)
+const xpToLevel = (xp) => {
+  let level = 1;
+  let needed = 0;
+  while (xp >= needed + level * 100) {
+    needed += level * 100;
+    level++;
+  }
+  return { level, currentLevelXp: xp - needed, nextLevelXp: level * 100 };
+};
+
+// Achievements — each: { id, key, icon, check(stats) -> bool, coins, xp }
+const ACHIEVEMENTS = [
+  { id: 'firstTask', icon: '🎯', check: s => s.totalTasksDone >= 1, coins: 10, xp: 20 },
+  { id: 'tenTasks', icon: '⭐', check: s => s.totalTasksDone >= 10, coins: 30, xp: 50 },
+  { id: 'fiftyTasks', icon: '🌟', check: s => s.totalTasksDone >= 50, coins: 100, xp: 150 },
+  { id: 'hundredTasks', icon: '👑', check: s => s.totalTasksDone >= 100, coins: 250, xp: 300 },
+  { id: 'firstPomo', icon: '⏱', check: s => s.totalPomos >= 1, coins: 10, xp: 20 },
+  { id: 'tenPomos', icon: '🔥', check: s => s.totalPomos >= 10, coins: 40, xp: 60 },
+  { id: 'fiftyPomos', icon: '💎', check: s => s.totalPomos >= 50, coins: 150, xp: 200 },
+  { id: 'threeDayStreak', icon: '🌱', check: s => s.streak >= 3, coins: 25, xp: 40 },
+  { id: 'sevenDayStreak', icon: '🌿', check: s => s.streak >= 7, coins: 75, xp: 100 },
+  { id: 'thirtyDayStreak', icon: '🌳', check: s => s.streak >= 30, coins: 300, xp: 400 },
+  { id: 'fiveMoods', icon: '💗', check: s => s.totalMoods >= 5, coins: 20, xp: 30 },
+  { id: 'tenChats', icon: '💬', check: s => s.totalChats >= 10, coins: 30, xp: 40 },
+  { id: 'level5', icon: '🚀', check: s => s.level >= 5, coins: 50, xp: 0 },
+  { id: 'level10', icon: '🏆', check: s => s.level >= 10, coins: 200, xp: 0 },
+  { id: 'microTask', icon: '✂️', check: s => s.totalMicros >= 5, coins: 30, xp: 50 },
+];
+
+// Shop items
+const SHOP_ITEMS = {
+  cat: [
+    { id: 'cat_default', name: 'Mochi (default)', cost: 0, emoji: '🐱' },
+    { id: 'cat_party', name: 'Party Mochi', cost: 50, emoji: '😻' },
+    { id: 'cat_cool', name: 'Cool Cat', cost: 80, emoji: '😎' },
+    { id: 'cat_devil', name: 'Mischief Mochi', cost: 120, emoji: '😈' },
+    { id: 'cat_angel', name: 'Angel Mochi', cost: 200, emoji: '😇' },
+    { id: 'cat_royal', name: 'Royal Mochi', cost: 350, emoji: '👑' },
+  ],
+  theme: [
+    { id: 'theme_default', name: 'Paper (default)', cost: 0, preview: '#f4f1ec' },
+    { id: 'theme_mint', name: 'Mint Fresh', cost: 60, preview: '#e6f4ea' },
+    { id: 'theme_sunset', name: 'Sunset Glow', cost: 80, preview: '#fde4d3' },
+    { id: 'theme_lavender', name: 'Lavender Dream', cost: 100, preview: '#ebe2f5' },
+    { id: 'theme_midnight', name: 'Midnight', cost: 150, preview: '#1a1d2e' },
+    { id: 'theme_neon', name: 'Y2K Neon', cost: 250, preview: '#ff85c1' },
+  ],
+  sticker: [
+    { id: 'sticker_basic', name: 'Basic Pack', cost: 0, emoji: '🌸⭐🐾' },
+    { id: 'sticker_food', name: 'Foodie Pack', cost: 40, emoji: '🍓🍰🧋' },
+    { id: 'sticker_cosmic', name: 'Cosmic Pack', cost: 80, emoji: '🌟🪐✨' },
+    { id: 'sticker_chaos', name: 'Chaos Pack', cost: 120, emoji: '💀🔥⚡' },
+    { id: 'sticker_cute', name: 'Cute Overload', cost: 150, emoji: '🧚🦄🌈' },
+  ],
+  badge: [
+    { id: 'badge_early', name: 'Early Adopter', cost: 100, emoji: '🌅' },
+    { id: 'badge_chaos', name: 'Chaos Embracer', cost: 150, emoji: '🌀' },
+    { id: 'badge_focus', name: 'Focus Warrior', cost: 200, emoji: '🎯' },
+    { id: 'badge_lover', name: 'Cat Lover', cost: 250, emoji: '💖' },
+  ],
+};
+
+// Confetti animation helper
+const fireConfetti = (count = 50) => {
+  const colors = ['#8b1a1a', '#d4a5a5', '#f5b5b5', '#1a1a1a', '#fdd835', '#4caf50'];
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden;';
+  document.body.appendChild(container);
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    const size = 6 + Math.random() * 8;
+    const left = Math.random() * 100;
+    const animDur = 2 + Math.random() * 2;
+    const delay = Math.random() * 0.5;
+    piece.style.cssText = `
+      position:absolute;
+      top:-20px;
+      left:${left}%;
+      width:${size}px;
+      height:${size}px;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      transform:rotate(${Math.random() * 360}deg);
+      animation:confettiFall ${animDur}s ${delay}s linear forwards;
+    `;
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.remove(), 4000);
 };
 
 /* =================================================================
@@ -2183,7 +2454,7 @@ const Questionnaire = ({ onComplete, lang }) => {
 /* =================================================================
    APP COMPONENTS — Pomodoro, Tasks, etc
 ================================================================= */
-const PomodoroTimer = ({ userId, messy, lang }) => {
+const PomodoroTimer = ({ userId, messy, lang, onPomoDone }) => {
   const t = useT(lang);
   const [workDuration, setWorkDuration] = useUserStorage(userId, 'work_dur', 25);
   const [breakDuration, setBreakDuration] = useUserStorage(userId, 'break_dur', 5);
@@ -2207,6 +2478,7 @@ const PomodoroTimer = ({ userId, messy, lang }) => {
       setIsRunning(false);
       if (mode === 'work') {
         setSessions(s => s + 1);
+        if (onPomoDone) onPomoDone();
         setMode('break');
         setSecondsLeft(breakDuration * 60);
       } else {
@@ -2223,7 +2495,7 @@ const PomodoroTimer = ({ userId, messy, lang }) => {
   const secs = secondsLeft % 60;
 
   return (
-    <div className="paper p-6 sm:p-8" style={getMessyStyle(messy, 2)}>
+    <div className={`paper p-6 sm:p-8 ${messy >= 4 ? 'messy-rotate-2' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('pomo.label')}</div>
@@ -2300,7 +2572,7 @@ const PomodoroTimer = ({ userId, messy, lang }) => {
   );
 };
 
-const TaskManager = ({ userId, tasks, setTasks, messy, lang }) => {
+const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenMicro }) => {
   const t = useT(lang);
   const [input, setInput] = useState('');
   const [filter, setFilter] = useState('today');
@@ -2321,7 +2593,10 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang }) => {
   };
 
   const toggleTask = (id) => {
+    const task = tasks.find(tk => tk.id === id);
+    const wasNotDone = task && !task.done;
     setTasks(tasks.map(tk => tk.id === id ? { ...tk, done: !tk.done } : tk));
+    if (wasNotDone && onTaskDone) onTaskDone(task);
   };
 
   const removeTask = (id) => {
@@ -2336,7 +2611,7 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang }) => {
   }, [tasks, filter]);
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 3)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('tasks.label')}</div>
@@ -2390,13 +2665,23 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang }) => {
           {filteredTasks.map((tk, i) => (
             <div
               key={tk.id}
-              className="paper-sm p-3 flex items-center gap-3 group"
-              style={{ background: 'var(--paper)', ...getMessyStyle(messy - 1, i + 1) }}
+              className={`paper-sm p-3 flex items-center gap-3 group ${messy >= 4 ? (i % 2 ? 'messy-rotate-1' : 'messy-rotate-4') : ''}`}
+              style={{ background: 'var(--paper)' }}
             >
               <div className={`custom-check ${tk.done ? 'checked' : ''}`} onClick={() => toggleTask(tk.id)}>
                 {tk.done && <Icon name="check" size={14} className="text-white"/>}
               </div>
               <div className={`flex-1 text-sm ${tk.done ? 'line-through opacity-50' : ''}`}>{tk.text}</div>
+              {!tk.done && !tk.parentId && onOpenMicro && (
+                <button
+                  onClick={() => onOpenMicro(tk)}
+                  className="opacity-0 group-hover:opacity-80 transition-opacity paper-sm btn-press px-2 py-1 text-[10px] font-mono whitespace-nowrap"
+                  style={{ background: 'var(--accent-soft)', color: 'var(--fg)' }}
+                  title={t('micro.button')}
+                >
+                  ✂️
+                </button>
+              )}
               <button onClick={() => removeTask(tk.id)} className="opacity-0 group-hover:opacity-60 transition-opacity">
                 <Icon name="x" size={14}/>
               </button>
@@ -2454,7 +2739,7 @@ const CalendarView = ({ tasks }) => {
   );
 };
 
-const MoodDiary = ({ userId, messy, lang }) => {
+const MoodDiary = ({ userId, messy, lang, onMoodLogged }) => {
   const t = useT(lang);
   const [moods, setMoods] = useUserStorage(userId, 'moods', []);
   const [note, setNote] = useState('');
@@ -2478,10 +2763,11 @@ const MoodDiary = ({ userId, messy, lang }) => {
     }, ...moods]);
     setNote('');
     setSelectedMood(null);
+    if (onMoodLogged) onMoodLogged();
   };
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 1)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`}>
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('mood.label')}</div>
         <div className="font-display text-2xl">{t('mood.title')}</div>
@@ -2532,7 +2818,7 @@ const GardenGame = ({ completedTasks, messy, lang }) => {
   }, [completedTasks]);
 
   return (
-    <div className="paper p-6 relative overflow-hidden" style={{ minHeight: 280, ...getMessyStyle(messy, 2) }}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-2' : ''} relative overflow-hidden`} style={{ minHeight: 280 }}>
       <div className="mb-2">
         <div className="text-xs font-mono opacity-60">{t('garden.label')}</div>
         <div className="font-display text-2xl">{t('garden.title')}</div>
@@ -2581,7 +2867,7 @@ const RandomWheel = ({ tasks, messy, lang }) => {
   };
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 4)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`}>
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('wheel.label')}</div>
         <div className="font-display text-2xl">{t('wheel.title')}</div>
@@ -2657,7 +2943,7 @@ const Statistics = ({ userId, tasks, sessions, messy, lang }) => {
   const maxBar = Math.max(1, ...stats.bars.map(b => b.count));
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 3)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('stats.label')}</div>
@@ -2763,7 +3049,7 @@ You are Mochi, a friendly cat assistant for an ADHD-focused productivity app. Re
   };
 
   return (
-    <div className="paper p-6 flex flex-col" style={{ height: 500, ...getMessyStyle(messy, 1) }}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''} flex flex-col`} style={{ height: 500 }}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('chat.label')}</div>
@@ -2859,7 +3145,7 @@ Give 3 short insights and 1 actionable suggestion. Max 150 words. Be warm, never
   ];
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 2)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-2' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('clue.label')}</div>
@@ -2928,7 +3214,7 @@ const StickerBoard = ({ userId, messy, lang }) => {
   const removeSticker = (id) => setStickers(stickers.filter(s => s.id !== id));
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 4)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`}>
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('sticker.label')}</div>
         <div className="font-display text-2xl">{t('sticker.title')}</div>
@@ -2987,7 +3273,7 @@ const Billing = ({ userId, messy, lang }) => {
   ];
 
   return (
-    <div className="paper p-6" style={getMessyStyle(messy, 1)}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`}>
       <div className="mb-6">
         <div className="text-xs font-mono opacity-60">{t('billing.label')}</div>
         <div className="font-display text-2xl">{t('billing.title')}</div>
@@ -3481,6 +3767,533 @@ const UpgradeSheet = ({ onClose, currentPlan, setPlan, lang }) => {
 };
 
 /* =================================================================
+   PROGRESS CARD — shows level, XP bar, paws, streak (inline on home tab)
+================================================================= */
+const ProgressCard = ({ rewardsState, lang, messy, onOpenShop, onOpenAchievements }) => {
+  const t = useT(lang);
+  const { play } = useSound();
+  const { level, currentLevelXp, nextLevelXp } = xpToLevel(rewardsState.xp);
+  const progress = (currentLevelXp / nextLevelXp) * 100;
+
+  return (
+    <div className="paper p-5" style={getMessyStyle(messy, 3)}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-xs font-mono opacity-60">{t('rewards.label')}</div>
+          <div className="font-display text-2xl">{t('rewards.title')}</div>
+        </div>
+        <div className="flex items-center gap-1 paper-sm px-3 py-1.5" style={{ background: 'var(--accent-soft)' }}>
+          <span className="text-base">🐾</span>
+          <span className="font-display text-lg">{rewardsState.coins}</span>
+        </div>
+      </div>
+
+      {/* Level + XP */}
+      <div className="mb-4">
+        <div className="flex items-end justify-between mb-1">
+          <div>
+            <span className="text-xs font-mono opacity-60">{t('rewards.level')}</span>
+            <span className="font-display text-4xl ml-2">{level}</span>
+          </div>
+          <div className="text-xs font-mono opacity-60">
+            {currentLevelXp} / {nextLevelXp} {t('rewards.xp')}
+          </div>
+        </div>
+        <div className="h-3 paper-sm overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
+          <div className="h-full transition-all duration-500" style={{ width: `${progress}%`, background: 'var(--accent)', animation: 'progressFill 0.8s ease-out' }}/>
+        </div>
+        <div className="text-[10px] font-mono opacity-50 mt-1">
+          {nextLevelXp - currentLevelXp} {t('rewards.xp')} {t('rewards.toNext')}
+        </div>
+      </div>
+
+      {/* Streak */}
+      <div className="paper-sm p-3 mb-3 flex items-center gap-3" style={{ background: 'var(--paper)' }}>
+        <div className="text-3xl">{rewardsState.streak >= 7 ? '🔥' : rewardsState.streak >= 3 ? '🌿' : '🌱'}</div>
+        <div className="flex-1">
+          <div className="font-display text-xl leading-none">{rewardsState.streak}</div>
+          <div className="text-[10px] font-mono opacity-60">{t('rewards.streak')}</div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="grid grid-cols-2 gap-2">
+        <button onClick={() => { play(); onOpenShop(); }} className="paper-sm btn-press py-2 text-xs font-mono" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+          {t('rewards.openShop')}
+        </button>
+        <button onClick={() => { play(); onOpenAchievements(); }} className="paper-sm btn-press py-2 text-xs font-mono">
+          {t('rewards.achievements')}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* =================================================================
+   SHOP MODAL
+================================================================= */
+const ShopModal = ({ rewardsState, setRewardsState, onClose, lang }) => {
+  const t = useT(lang);
+  const { play } = useSound();
+  const [category, setCategory] = useState('cat');
+  const [confirmItem, setConfirmItem] = useState(null);
+
+  const owned = rewardsState.ownedItems || [];
+  const equipped = rewardsState.equipped || { cat: 'cat_default', theme: 'theme_default', sticker: 'sticker_basic' };
+
+  const purchase = (item) => {
+    if (rewardsState.coins < item.cost) return;
+    play('success');
+    fireConfetti(20);
+    setRewardsState(prev => ({
+      ...prev,
+      coins: prev.coins - item.cost,
+      ownedItems: [...(prev.ownedItems || []), item.id],
+    }));
+    setConfirmItem(null);
+  };
+
+  const equip = (category, itemId) => {
+    play();
+    setRewardsState(prev => ({
+      ...prev,
+      equipped: { ...(prev.equipped || {}), [category]: itemId },
+    }));
+  };
+
+  const cats = [
+    { id: 'cat', label: t('shop.cat.title'), icon: '🐱' },
+    { id: 'theme', label: t('shop.theme.title'), icon: '🎨' },
+    { id: 'sticker', label: t('shop.sticker.title'), icon: '✨' },
+    { id: 'badge', label: t('shop.badge.title'), icon: '🏅' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+      <div className="paper w-full sm:max-w-2xl fade-in max-h-[92vh] overflow-y-auto hide-scrollbar" style={{ borderRadius: '24px 24px 0 0' }} onClick={e => e.stopPropagation()}>
+        {/* header */}
+        <div className="sticky top-0 z-10 px-5 pt-5 pb-3 border-b backdrop-blur-md" style={{ background: 'rgba(255,255,255,0.95)', borderColor: 'var(--bg-secondary)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-xs font-mono opacity-60">// SHOP</div>
+              <div className="font-display text-2xl">{t('shop.title')}</div>
+              <div className="text-xs opacity-60">{t('shop.subtitle')}</div>
+            </div>
+            <button onClick={onClose} className="paper-sm btn-press p-2">
+              <Icon name="x" size={14}/>
+            </button>
+          </div>
+
+          {/* balance */}
+          <div className="paper-sm p-3 flex items-center justify-between" style={{ background: 'var(--accent-soft)' }}>
+            <span className="text-xs font-mono opacity-60">{t('shop.balance')}</span>
+            <div className="flex items-center gap-1">
+              <span className="text-2xl">🐾</span>
+              <span className="font-display text-2xl">{rewardsState.coins}</span>
+            </div>
+          </div>
+
+          {/* category tabs */}
+          <div className="flex gap-1 mt-3 overflow-x-auto hide-scrollbar">
+            {cats.map(c => (
+              <button
+                key={c.id}
+                onClick={() => { play(); setCategory(c.id); }}
+                className="paper-sm btn-press px-3 py-1.5 text-xs font-mono whitespace-nowrap flex items-center gap-1.5"
+                style={{ background: category === c.id ? 'var(--fg)' : 'var(--paper)', color: category === c.id ? 'var(--paper)' : 'var(--fg)' }}
+              >
+                <span>{c.icon}</span>
+                <span>{c.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* items grid */}
+        <div className="p-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {SHOP_ITEMS[category].map(item => {
+              const isOwned = owned.includes(item.id) || item.cost === 0;
+              const isEquipped = equipped[category] === item.id;
+              const canAfford = rewardsState.coins >= item.cost;
+              return (
+                <div key={item.id} className="paper-sm p-4 flex flex-col items-center text-center">
+                  {/* preview */}
+                  <div className="w-16 h-16 flex items-center justify-center mb-2" style={{ background: category === 'theme' ? item.preview : 'transparent', borderRadius: category === 'theme' ? '8px' : 0 }}>
+                    {category === 'theme' ? (
+                      <div className="w-full h-full rounded" style={{ background: item.preview, border: '1.5px solid var(--line)' }}/>
+                    ) : (
+                      <span className="text-5xl">{item.emoji}</span>
+                    )}
+                  </div>
+                  <div className="font-display text-sm leading-tight mb-1">{item.name}</div>
+                  {item.cost > 0 && !isOwned && (
+                    <div className="text-xs font-mono opacity-70 mb-2">🐾 {item.cost}</div>
+                  )}
+                  {isOwned ? (
+                    <button
+                      onClick={() => !isEquipped && equip(category, item.id)}
+                      disabled={isEquipped}
+                      className="w-full paper-sm btn-press py-1.5 text-[10px] font-mono"
+                      style={{ background: isEquipped ? 'var(--fg)' : 'var(--paper)', color: isEquipped ? 'var(--paper)' : 'var(--fg)' }}
+                    >
+                      {isEquipped ? t('shop.equipped') : t('shop.equip')}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => canAfford && setConfirmItem({ ...item, category })}
+                      disabled={!canAfford}
+                      className="w-full paper-sm btn-press py-1.5 text-[10px] font-mono disabled:opacity-40"
+                      style={{ background: canAfford ? 'var(--accent)' : 'var(--paper)', color: canAfford ? 'var(--paper)' : 'var(--fg)' }}
+                    >
+                      {canAfford ? t('shop.buy') : t('shop.notEnough')}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* confirm purchase */}
+      {confirmItem && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={() => setConfirmItem(null)}>
+          <div className="paper p-6 max-w-sm w-full fade-in" onClick={e => e.stopPropagation()}>
+            <div className="font-display text-xl mb-1">{t('shop.confirmTitle')}</div>
+            <div className="text-sm opacity-70 mb-4">
+              {t('shop.confirmBody').replace('{coins}', confirmItem.cost)} <strong>{confirmItem.name}</strong>?
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => purchase(confirmItem)} className="flex-1 paper-sm btn-press py-2 text-sm font-mono" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+                {t('shop.confirm')} 🐾 {confirmItem.cost}
+              </button>
+              <button onClick={() => setConfirmItem(null)} className="paper-sm btn-press px-4 py-2 text-sm font-mono">
+                {t('shop.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* =================================================================
+   ACHIEVEMENTS MODAL
+================================================================= */
+const AchievementsModal = ({ rewardsState, onClose, lang }) => {
+  const t = useT(lang);
+  const unlocked = rewardsState.achievements || [];
+  const stats = {
+    totalTasksDone: rewardsState.totalTasksDone || 0,
+    totalPomos: rewardsState.totalPomos || 0,
+    totalMoods: rewardsState.totalMoods || 0,
+    totalChats: rewardsState.totalChats || 0,
+    totalMicros: rewardsState.totalMicros || 0,
+    streak: rewardsState.streak || 0,
+    level: xpToLevel(rewardsState.xp).level,
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+      <div className="paper w-full sm:max-w-2xl fade-in max-h-[92vh] overflow-y-auto hide-scrollbar" style={{ borderRadius: '24px 24px 0 0' }} onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 z-10 px-5 pt-5 pb-3 border-b backdrop-blur-md flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.95)', borderColor: 'var(--bg-secondary)' }}>
+          <div>
+            <div className="text-xs font-mono opacity-60">// ACHIEVEMENTS</div>
+            <div className="font-display text-2xl">{t('ach.title')}</div>
+            <div className="text-xs opacity-60">{unlocked.length} / {ACHIEVEMENTS.length} {t('ach.unlocked')}</div>
+          </div>
+          <button onClick={onClose} className="paper-sm btn-press p-2">
+            <Icon name="x" size={14}/>
+          </button>
+        </div>
+
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {ACHIEVEMENTS.map(ach => {
+            const isUnlocked = unlocked.includes(ach.id);
+            return (
+              <div
+                key={ach.id}
+                className="paper-sm p-4 flex items-center gap-3"
+                style={{ opacity: isUnlocked ? 1 : 0.5, background: isUnlocked ? 'var(--accent-soft)' : 'var(--paper)' }}
+              >
+                <div className="text-4xl flex-shrink-0" style={{ filter: isUnlocked ? 'none' : 'grayscale(1)' }}>{ach.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-display text-base leading-tight">{t(`ach.${ach.id}`)}</div>
+                  <div className="text-xs opacity-70 leading-tight">{t(`ach.${ach.id}Desc`)}</div>
+                  {!isUnlocked && (
+                    <div className="text-[10px] font-mono opacity-60 mt-1">+{ach.coins} 🐾 · +{ach.xp} XP</div>
+                  )}
+                  {isUnlocked && (
+                    <div className="text-[10px] font-mono mt-1" style={{ color: 'var(--accent)' }}>✓ {t('ach.unlocked')}</div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =================================================================
+   LEVEL UP MODAL
+================================================================= */
+const LevelUpModal = ({ newLevel, coinsEarned, onClose, lang }) => {
+  const t = useT(lang);
+  useEffect(() => {
+    fireConfetti(80);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={onClose}>
+      <div className="paper-lg p-8 max-w-sm w-full text-center fade-in" onClick={e => e.stopPropagation()} style={{ animation: 'bounce-in 0.5s' }}>
+        <div className="text-7xl mb-4" style={{ animation: 'coinPop 0.8s' }}>🎉</div>
+        <div className="font-display text-3xl mb-1">{t('rewards.levelUp')}</div>
+        <div className="text-sm opacity-70 mb-4">{t('rewards.youReached')}</div>
+        <div className="font-display text-7xl mb-2" style={{ color: 'var(--accent)' }}>
+          Lv. {newLevel}
+        </div>
+        <div className="paper-sm p-3 mb-4" style={{ background: 'var(--accent-soft)' }}>
+          <div className="text-xs font-mono opacity-70">{t('rewards.coinsEarned')}</div>
+          <div className="font-display text-2xl">+{coinsEarned} 🐾</div>
+        </div>
+        <button onClick={onClose} className="w-full paper-sm btn-press py-3 font-mono text-sm shine-btn" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+          {t('rewards.continue')}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* =================================================================
+   MICRO-TASK BREAKDOWN MODAL
+================================================================= */
+const MicroTaskModal = ({ task, tasks, setTasks, apiKey, model, onClose, lang, onUsed }) => {
+  const t = useT(lang);
+  const { play } = useSound();
+  const [microTasks, setMicroTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // rule-based fallback breakdown
+  const ruleBreakdown = (text) => {
+    const lower = text.toLowerCase();
+    if (lower.match(/write|viết|draft/i)) {
+      return lang === 'vi'
+        ? [`mở app/file để viết "${text}"`, `viết tiêu đề/đoạn mở đầu`, `viết phần thân chính`, `đọc lại và sửa`, `lưu/gửi`]
+        : [`open the app/file for "${text}"`, `write title or opening`, `draft the main body`, `re-read and edit`, `save or send`];
+    }
+    if (lower.match(/clean|dọn|tidy|organize/i)) {
+      return lang === 'vi'
+        ? [`đứng dậy đi tới chỗ cần dọn`, `set timer 10 phút`, `vứt rác rõ ràng`, `gom đồ về vị trí`, `lau qua bề mặt`]
+        : [`stand up and go to the spot`, `set a 10-min timer`, `throw away obvious trash`, `gather items to their spot`, `wipe surfaces`];
+    }
+    if (lower.match(/email|mail|reply/i)) {
+      return lang === 'vi'
+        ? [`mở email`, `đọc message gốc 1 lần`, `note 3 ý chính cần reply`, `gõ draft`, `kiểm tra và gửi`]
+        : [`open email`, `read original message once`, `note 3 main points to reply`, `type the draft`, `review and send`];
+    }
+    if (lower.match(/study|học|read|đọc/i)) {
+      return lang === 'vi'
+        ? [`lấy tài liệu ra`, `set pomodoro 25 phút`, `đọc/học 1 phần nhỏ`, `viết 3 dòng note`, `nghỉ và đánh dấu xong`]
+        : [`get the material out`, `set a 25-min pomodoro`, `study one small section`, `write 3 lines of notes`, `take a break and mark done`];
+    }
+    if (lower.match(/exercise|tập|gym|workout/i)) {
+      return lang === 'vi'
+        ? [`thay đồ tập`, `uống nước`, `warm up 5 phút`, `tập set chính 15 phút`, `cool down + stretch`]
+        : [`change into workout clothes`, `drink water`, `warm up 5 minutes`, `main set 15 minutes`, `cool down and stretch`];
+    }
+    // generic
+    return lang === 'vi'
+      ? [`định nghĩa "${text}" cần xong khi nào`, `liệt kê 3 thứ cần làm đầu tiên`, `bắt tay vào thứ 1`, `nghỉ 3 phút`, `tiếp tục cho đến xong`]
+      : [`define what "${text}" looks like when done`, `list 3 first things to do`, `start the 1st thing`, `take a 3-min break`, `continue until done`];
+  };
+
+  const generate = async () => {
+    setLoading(true);
+    setError('');
+    setMicroTasks([]);
+
+    if (!apiKey) {
+      // fallback to rule-based
+      setTimeout(() => {
+        setMicroTasks(ruleBreakdown(task.text));
+        setLoading(false);
+      }, 600);
+      return;
+    }
+
+    try {
+      const prompt = `Break down this task into 3-5 very small, concrete, doable micro-steps for someone with ADHD. Each step should take 5-15 minutes max. Respond ONLY with a JSON array of strings, nothing else. No markdown, no code fences, no explanation. Language: ${lang === 'vi' ? 'Vietnamese, casual genZ tone' : 'English, casual genZ tone'}.
+
+Task: "${task.text}"
+
+Example format: ["step 1", "step 2", "step 3"]`;
+
+      const modelName = model || 'gemini-2.5-flash';
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error.message);
+        setMicroTasks(ruleBreakdown(task.text));
+        setLoading(false);
+        return;
+      }
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      // try to parse JSON
+      const cleaned = reply.replace(/```json|```/g, '').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMicroTasks(parsed.slice(0, 5).map(String));
+        } else {
+          throw new Error('not array');
+        }
+      } catch {
+        // try to extract lines from non-JSON response
+        const lines = cleaned.split('\n').map(l => l.replace(/^[-*\d.)\s]+/, '').trim()).filter(l => l.length > 0 && l.length < 200);
+        if (lines.length >= 2) {
+          setMicroTasks(lines.slice(0, 5));
+        } else {
+          setMicroTasks(ruleBreakdown(task.text));
+        }
+      }
+    } catch (err) {
+      setError(err.message);
+      setMicroTasks(ruleBreakdown(task.text));
+    }
+    setLoading(false);
+  };
+
+  // auto-generate on mount
+  useEffect(() => {
+    generate();
+  }, []);
+
+  const applyReplace = () => {
+    play('success');
+    const today = task.date;
+    const newTasks = microTasks.map((text, i) => ({
+      id: Date.now() + i,
+      text: `↳ ${text}`,
+      done: false,
+      date: today,
+      created: Date.now() + i,
+      tags: ['micro'],
+      parentId: task.id,
+    }));
+    // remove original, add micros
+    const filtered = tasks.filter(t => t.id !== task.id);
+    setTasks([...filtered, ...newTasks]);
+    if (onUsed) onUsed();
+    onClose();
+  };
+
+  const applyAdd = () => {
+    play('success');
+    const today = task.date;
+    const newTasks = microTasks.map((text, i) => ({
+      id: Date.now() + i,
+      text: `↳ ${text}`,
+      done: false,
+      date: today,
+      created: Date.now() + i,
+      tags: ['micro'],
+      parentId: task.id,
+    }));
+    setTasks([...tasks, ...newTasks]);
+    if (onUsed) onUsed();
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style={{ background: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+      <div className="paper w-full sm:max-w-lg fade-in max-h-[92vh] overflow-y-auto hide-scrollbar" style={{ borderRadius: '24px 24px 0 0' }} onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 z-10 px-5 pt-5 pb-3 border-b backdrop-blur-md flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.95)', borderColor: 'var(--bg-secondary)' }}>
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="text-3xl flex-shrink-0">✂️</div>
+            <div className="min-w-0">
+              <div className="font-display text-xl truncate">{t('micro.title')}</div>
+              <div className="text-xs opacity-60 truncate">{t('micro.sub')}</div>
+            </div>
+          </div>
+          <button onClick={onClose} className="paper-sm btn-press p-2 flex-shrink-0">
+            <Icon name="x" size={14}/>
+          </button>
+        </div>
+
+        <div className="p-5">
+          {/* original task */}
+          <div className="mb-4">
+            <div className="text-xs font-mono opacity-60 mb-1">{t('micro.original')}</div>
+            <div className="paper-sm p-3 text-sm">{task.text}</div>
+          </div>
+
+          {/* micro tasks list */}
+          {loading && (
+            <div className="paper-sm p-4 text-center text-sm">
+              <div className="text-3xl mb-2">🐾</div>
+              <div className="opacity-70 font-mono text-xs">{t('micro.thinking')}</div>
+              <div className="flex justify-center gap-1 mt-2">
+                <span className="animate-bounce">•</span>
+                <span className="animate-bounce" style={{ animationDelay: '0.1s' }}>•</span>
+                <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>•</span>
+              </div>
+            </div>
+          )}
+
+          {!loading && microTasks.length > 0 && (
+            <div className="space-y-2 mb-4">
+              {microTasks.map((mt, i) => (
+                <div key={i} className="paper-sm p-3 text-sm flex items-start gap-3" style={getMessyStyle(2, i + 1)}>
+                  <span className="font-mono text-xs opacity-50 mt-0.5">0{i + 1}</span>
+                  <span className="flex-1">{mt}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && !loading && (
+            <div className="text-xs font-mono opacity-60 mb-2">⚠️ AI fallback used: {error.slice(0, 80)}</div>
+          )}
+
+          {!apiKey && !loading && (
+            <div className="text-[10px] font-mono opacity-60 mb-3 italic">{t('micro.aiNeeded')}</div>
+          )}
+
+          {/* actions */}
+          {!loading && microTasks.length > 0 && (
+            <div className="space-y-2">
+              <button onClick={applyAdd} className="w-full paper-sm btn-press py-3 text-sm font-mono" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+                {t('micro.add')}
+              </button>
+              <button onClick={applyReplace} className="w-full paper-sm btn-press py-2.5 text-xs font-mono">
+                {t('micro.replace')}
+              </button>
+              <div className="flex gap-2 pt-1">
+                <button onClick={generate} className="flex-1 paper-sm btn-press py-2 text-xs font-mono">
+                  {t('micro.regenerate')}
+                </button>
+                <button onClick={onClose} className="flex-1 paper-sm btn-press py-2 text-xs font-mono">
+                  {t('micro.cancel')}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =================================================================
    SPACE SETTINGS MODAL
 ================================================================= */
 const SpaceSettingsModal = ({
@@ -3719,10 +4532,10 @@ const SpaceSettingsModal = ({
       <div>
         <div className="text-xs font-mono opacity-60 mb-1">{t('appearance.messy')}</div>
         <div className="paper-sm p-4">
-          <div className="flex justify-between text-xs font-mono mb-2 items-center">
-            <span className="opacity-60">{lang === 'vi' ? 'gọn gàng' : 'clean'}</span>
-            <span className="font-bold text-[var(--accent)]">{getMessyLabel(messy, lang)} ({messy}/5)</span>
-            <span className="opacity-60">{lang === 'vi' ? 'hỗn loạn' : 'chaos'}</span>
+          <div className="flex justify-between text-xs font-mono mb-2">
+            <span>tidy</span>
+            <span>{messy}/5</span>
+            <span>chaos</span>
           </div>
           <input
             type="range"
@@ -3879,10 +4692,28 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
   const [soundEnabled, setSoundEnabled] = useUserStorage(userId, 'sound_enabled', true);
   const [messyOverride, setMessyOverride] = useUserStorage(userId, 'messy_override', null);
   const [plan, setPlan] = useUserStorage(userId, 'plan', 'starter');
+  const [rewardsState, setRewardsState] = useUserStorage(userId, 'rewards_state', {
+    xp: 0,
+    coins: 0,
+    streak: 0,
+    lastVisit: null,
+    totalTasksDone: 0,
+    totalPomos: 0,
+    totalMoods: 0,
+    totalChats: 0,
+    totalMicros: 0,
+    achievements: [],
+    ownedItems: ['cat_default', 'theme_default', 'sticker_basic'],
+    equipped: { cat: 'cat_default', theme: 'theme_default', sticker: 'sticker_basic' },
+  });
   const [showSettings, setShowSettings] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [overlayPage, setOverlayPage] = useState(null); // 'privacy' | 'terms' | 'troubleshoot' | null
+  const [showShop, setShowShop] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [levelUpEvent, setLevelUpEvent] = useState(null);
+  const [microTaskTarget, setMicroTaskTarget] = useState(null);
+  const [overlayPage, setOverlayPage] = useState(null);
   const [tab, setTab] = useState('home');
   const [showCat, setShowCat] = useUserStorage(userId, 'show_cat', true);
   const [catMessage, setCatMessage] = useState('');
@@ -3896,6 +4727,83 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
     enabled: soundEnabled,
     play: (type) => playClick(soundEnabled, type),
   }), [soundEnabled]);
+
+  // award helper — updates xp, coins, and checks for level up + new achievements
+  const award = useCallback((updates) => {
+    setRewardsState(prev => {
+      const next = { ...prev };
+
+      // apply stat increments
+      if (updates.xp) next.xp = (next.xp || 0) + updates.xp;
+      if (updates.coins) next.coins = (next.coins || 0) + updates.coins;
+      if (updates.taskDone) next.totalTasksDone = (next.totalTasksDone || 0) + 1;
+      if (updates.pomoDone) next.totalPomos = (next.totalPomos || 0) + 1;
+      if (updates.moodLogged) next.totalMoods = (next.totalMoods || 0) + 1;
+      if (updates.chatSent) next.totalChats = (next.totalChats || 0) + 1;
+      if (updates.microUsed) next.totalMicros = (next.totalMicros || 0) + 1;
+
+      // detect level up
+      const oldLevel = xpToLevel(prev.xp || 0).level;
+      const newLevel = xpToLevel(next.xp).level;
+      if (newLevel > oldLevel) {
+        const coinsForLevelUp = (newLevel - oldLevel) * COINS_PER_LEVEL;
+        next.coins = (next.coins || 0) + coinsForLevelUp;
+        // queue level up event for display (use setTimeout to avoid in-render update)
+        setTimeout(() => {
+          playClick(soundEnabled, 'success');
+          setLevelUpEvent({ newLevel, coinsEarned: coinsForLevelUp });
+        }, 100);
+      }
+
+      // check achievements
+      const stats = {
+        totalTasksDone: next.totalTasksDone || 0,
+        totalPomos: next.totalPomos || 0,
+        totalMoods: next.totalMoods || 0,
+        totalChats: next.totalChats || 0,
+        totalMicros: next.totalMicros || 0,
+        streak: next.streak || 0,
+        level: newLevel,
+      };
+      const existingAch = next.achievements || [];
+      const newlyUnlocked = [];
+      ACHIEVEMENTS.forEach(ach => {
+        if (!existingAch.includes(ach.id) && ach.check(stats)) {
+          newlyUnlocked.push(ach);
+        }
+      });
+      if (newlyUnlocked.length > 0) {
+        next.achievements = [...existingAch, ...newlyUnlocked.map(a => a.id)];
+        const bonusCoins = newlyUnlocked.reduce((s, a) => s + a.coins, 0);
+        const bonusXp = newlyUnlocked.reduce((s, a) => s + a.xp, 0);
+        next.coins = (next.coins || 0) + bonusCoins;
+        next.xp = (next.xp || 0) + bonusXp;
+        // queue toast (simple console for now)
+        setTimeout(() => {
+          fireConfetti(30);
+        }, 200);
+      }
+
+      return next;
+    });
+  }, [soundEnabled]);
+
+  // streak tracking — update on mount if new day
+  useEffect(() => {
+    if (!adhdProfile) return;
+    const today = new Date().toISOString().split('T')[0];
+    const lastVisit = rewardsState.lastVisit;
+    if (lastVisit !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      setRewardsState(prev => ({
+        ...prev,
+        lastVisit: today,
+        streak: lastVisit === yesterdayStr ? (prev.streak || 0) + 1 : (lastVisit === null ? 1 : 1),
+      }));
+    }
+  }, [adhdProfile]);
 
   useEffect(() => {
     if (adhdProfile) {
@@ -3976,8 +4884,11 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
               <Cat mood="idle" size={36}/>
               <div>
                 <div className="font-display text-xl leading-none">brain.exe</div>
-                <div className="text-[10px] font-mono opacity-50">
-                  adhd {adhdProfile?.score || 0}/10 · {getMessyLabel(messy, lang)}
+                <div className="text-[10px] font-mono opacity-50 flex items-center gap-2 flex-wrap">
+                  <span>Lv.{xpToLevel(rewardsState.xp).level}</span>
+                  <span>· 🐾 {rewardsState.coins}</span>
+                  <span>· 🔥 {rewardsState.streak}d</span>
+                  <span className="hidden sm:inline">· adhd {adhdProfile?.score || 0}/10</span>
                 </div>
               </div>
             </div>
@@ -4020,10 +4931,25 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
         {tab === 'home' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 space-y-4">
-              <PomodoroTimer userId={userId} messy={messy} lang={lang}/>
-              <TaskManager userId={userId} tasks={tasks} setTasks={setTasks} messy={messy} lang={lang}/>
+              <ProgressCard
+                rewardsState={rewardsState}
+                lang={lang}
+                messy={messy}
+                onOpenShop={() => setShowShop(true)}
+                onOpenAchievements={() => setShowAchievements(true)}
+              />
+              <PomodoroTimer userId={userId} messy={messy} lang={lang} onPomoDone={() => award({ xp: XP_PER_POMO, coins: COINS_PER_POMO, pomoDone: true })}/>
+              <TaskManager
+                userId={userId}
+                tasks={tasks}
+                setTasks={setTasks}
+                messy={messy}
+                lang={lang}
+                onTaskDone={() => award({ xp: XP_PER_TASK, coins: COINS_PER_TASK, taskDone: true })}
+                onOpenMicro={(task) => setMicroTaskTarget(task)}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <MoodDiary userId={userId} messy={messy} lang={lang}/>
+                <MoodDiary userId={userId} messy={messy} lang={lang} onMoodLogged={() => award({ xp: XP_PER_MOOD, moodLogged: true })}/>
                 <RandomWheel tasks={tasks} messy={messy} lang={lang}/>
               </div>
             </div>
@@ -4036,13 +4962,21 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
         )}
         {tab === 'tasks' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <TaskManager userId={userId} tasks={tasks} setTasks={setTasks} messy={messy} lang={lang}/>
+            <TaskManager
+              userId={userId}
+              tasks={tasks}
+              setTasks={setTasks}
+              messy={messy}
+              lang={lang}
+              onTaskDone={() => award({ xp: XP_PER_TASK, coins: COINS_PER_TASK, taskDone: true })}
+              onOpenMicro={(task) => setMicroTaskTarget(task)}
+            />
             <RandomWheel tasks={tasks} messy={messy} lang={lang}/>
           </div>
         )}
         {tab === 'timer' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <PomodoroTimer userId={userId} messy={messy} lang={lang}/>
+            <PomodoroTimer userId={userId} messy={messy} lang={lang} onPomoDone={() => award({ xp: XP_PER_POMO, coins: COINS_PER_POMO, pomoDone: true })}/>
             <GardenGame completedTasks={completedCount} messy={messy} lang={lang}/>
           </div>
         )}
@@ -4051,12 +4985,19 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
             <AIChat userId={userId} apiKey={apiKey} model={model} tasks={tasks} sessions={sessions} moods={moods} messy={messy} lang={lang} onSetupKey={() => setShowWizard(true)}/>
             <div className="space-y-4">
               <ClueBoard tasks={tasks} moods={moods} sessions={sessions} apiKey={apiKey} model={model} messy={messy} lang={lang}/>
-              <MoodDiary userId={userId} messy={messy} lang={lang}/>
+              <MoodDiary userId={userId} messy={messy} lang={lang} onMoodLogged={() => award({ xp: XP_PER_MOOD, moodLogged: true })}/>
             </div>
           </div>
         )}
         {tab === 'stats' && (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto space-y-4">
+            <ProgressCard
+              rewardsState={rewardsState}
+              lang={lang}
+              messy={messy}
+              onOpenShop={() => setShowShop(true)}
+              onOpenAchievements={() => setShowAchievements(true)}
+            />
             <Statistics userId={userId} tasks={tasks} sessions={sessions} messy={messy} lang={lang}/>
           </div>
         )}
@@ -4123,6 +5064,45 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
           currentPlan={plan}
           setPlan={setPlan}
           lang={lang}
+        />
+      )}
+
+      {showShop && (
+        <ShopModal
+          rewardsState={rewardsState}
+          setRewardsState={setRewardsState}
+          onClose={() => setShowShop(false)}
+          lang={lang}
+        />
+      )}
+
+      {showAchievements && (
+        <AchievementsModal
+          rewardsState={rewardsState}
+          onClose={() => setShowAchievements(false)}
+          lang={lang}
+        />
+      )}
+
+      {levelUpEvent && (
+        <LevelUpModal
+          newLevel={levelUpEvent.newLevel}
+          coinsEarned={levelUpEvent.coinsEarned}
+          onClose={() => setLevelUpEvent(null)}
+          lang={lang}
+        />
+      )}
+
+      {microTaskTarget && (
+        <MicroTaskModal
+          task={microTaskTarget}
+          tasks={tasks}
+          setTasks={setTasks}
+          apiKey={apiKey}
+          model={model}
+          lang={lang}
+          onUsed={() => award({ xp: XP_PER_MICRO, microUsed: true })}
+          onClose={() => setMicroTaskTarget(null)}
         />
       )}
 
