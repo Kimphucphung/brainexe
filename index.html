@@ -355,7 +355,9 @@ tailwind.config = {
 <body>
 <div id="root"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- IMPORTANT: Supabase MUST load BEFORE babel processes the script.
+     Using defer=false (default) + placing before babel ensures sync load. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -364,19 +366,29 @@ tailwind.config = {
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 /* =================================================================
-   SUPABASE CLIENT — ⚠️ THAY 2 GIÁ TRỊ DƯỚI ĐÂY BẰNG KEY CỦA BẠN
-   Lấy ở: Supabase Dashboard → Project Settings → API
+   SUPABASE CLIENT — defensive init with fallback
 ================================================================= */
 const SUPABASE_URL = 'https://zjjfxsyyzypvyactnyry.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqamZ4c3l5enlwdnlhY3RueXJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NjcyOTIsImV4cCI6MjA5NTM0MzI5Mn0.biectTUpeRCmftsTbMtAvZ03H48KksSAS5OH-k4925Q';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
+// Check if Supabase SDK loaded; if not, fail gracefully (app still works in local-only mode)
+let supabase = null;
+try {
+  if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      }
+    });
+    console.log('[brain.exe] Supabase initialized');
+  } else {
+    console.warn('[brain.exe] Supabase SDK not loaded, running in local-only mode');
   }
-});
+} catch (e) {
+  console.error('[brain.exe] Supabase init failed:', e);
+}
 
 /* =================================================================
    I18N — translations
@@ -1374,105 +1386,206 @@ const SoundContext = React.createContext({ enabled: true, play: () => {} });
 const useSound = () => React.useContext(SoundContext);
 
 /* =================================================================
-   AUTH — Supabase backend
+   AUTH — Supabase backend with local fallback
+   If Supabase fails to load, falls back to localStorage-only mode
 ================================================================= */
+
+// Local fallback (used when Supabase SDK fails to load)
+const localHash = (pw) => {
+  let h = 0;
+  for (let i = 0; i < pw.length; i++) { h = ((h << 5) - h) + pw.charCodeAt(i); h |= 0; }
+  return `h_${Math.abs(h).toString(36)}`;
+};
+
+const localAuth = {
+  signup: async (email, password, name) => {
+    const store = getStore();
+    const users = store['__users'] || {};
+    if (users[email]) return { error: 'email already exists' };
+    const userId = `u_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    users[email] = { userId, email, name, pw: localHash(password), createdAt: Date.now() };
+    store['__users'] = users;
+    store['__session'] = { userId, email, name };
+    saveStore(store);
+    return { user: { userId, email, name, plan: 'starter' } };
+  },
+  login: async (email, password) => {
+    const store = getStore();
+    const users = store['__users'] || {};
+    const u = users[email];
+    if (!u) return { error: 'no account found' };
+    if (u.pw !== localHash(password)) return { error: 'wrong password' };
+    store['__session'] = { userId: u.userId, email: u.email, name: u.name };
+    saveStore(store);
+    return { user: { userId: u.userId, email: u.email, name: u.name, plan: 'starter' } };
+  },
+  getSession: async () => {
+    const store = getStore();
+    return store['__session'] || null;
+  },
+  logout: async () => {
+    const store = getStore();
+    delete store['__session'];
+    saveStore(store);
+  },
+  updateName: async (email, newName) => {
+    const store = getStore();
+    const users = store['__users'] || {};
+    if (!users[email]) return { error: 'no account' };
+    users[email].name = newName;
+    if (store['__session']?.email === email) store['__session'].name = newName;
+    saveStore(store);
+    return { user: { ...users[email] } };
+  },
+  changePassword: async (email, currentPw, newPw) => {
+    const store = getStore();
+    const users = store['__users'] || {};
+    if (!users[email]) return { error: 'no account' };
+    if (users[email].pw !== localHash(currentPw)) return { error: 'current password is wrong' };
+    if (newPw.length < 4) return { error: 'new password too short' };
+    users[email].pw = localHash(newPw);
+    saveStore(store);
+    return { ok: true };
+  },
+};
+
 const supabaseAuth = {
   signup: async (email, password, name) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } }
-    });
-    if (error) {
-      if (error.message.includes('already registered')) return { error: 'email already exists' };
-      return { error: error.message };
-    }
-    if (!data.user) return { error: 'signup failed' };
-    return {
-      user: {
-        userId: data.user.id,
-        email: data.user.email,
-        name: name,
-        plan: 'starter',
+    if (!supabase) return localAuth.signup(email, password, name);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } }
+      });
+      if (error) {
+        if (error.message.includes('already registered')) return { error: 'email already exists' };
+        return { error: error.message };
       }
-    };
+      if (!data.user) return { error: 'signup failed' };
+      return {
+        user: {
+          userId: data.user.id,
+          email: data.user.email,
+          name: name,
+          plan: 'starter',
+        }
+      };
+    } catch (e) {
+      console.error('signup error:', e);
+      return { error: 'network error, please try again' };
+    }
   },
 
   login: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      if (error.message.includes('Invalid login')) return { error: 'wrong email or password' };
-      if (error.message.includes('Email not confirmed')) return { error: 'please check your email to confirm' };
-      return { error: error.message };
-    }
-    if (!data.user) return { error: 'login failed' };
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('name, plan')
-      .eq('id', data.user.id)
-      .single();
-
-    return {
-      user: {
-        userId: data.user.id,
-        email: data.user.email,
-        name: profile?.name || data.user.email.split('@')[0],
-        plan: profile?.plan || 'starter',
+    if (!supabase) return localAuth.login(email, password);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (error.message.includes('Invalid login')) return { error: 'wrong email or password' };
+        if (error.message.includes('Email not confirmed')) return { error: 'please check your email to confirm' };
+        return { error: error.message };
       }
-    };
+      if (!data.user) return { error: 'login failed' };
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, plan')
+        .eq('id', data.user.id)
+        .single();
+
+      return {
+        user: {
+          userId: data.user.id,
+          email: data.user.email,
+          name: profile?.name || data.user.email.split('@')[0],
+          plan: profile?.plan || 'starter',
+        }
+      };
+    } catch (e) {
+      console.error('login error:', e);
+      return { error: 'network error, please try again' };
+    }
   },
 
   getSession: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) return null;
+    if (!supabase) return localAuth.getSession();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return null;
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('name, plan')
-      .eq('id', session.user.id)
-      .single();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, plan')
+        .eq('id', session.user.id)
+        .single();
 
-    return {
-      userId: session.user.id,
-      email: session.user.email,
-      name: profile?.name || session.user.email.split('@')[0],
-      plan: profile?.plan || 'starter',
-    };
+      return {
+        userId: session.user.id,
+        email: session.user.email,
+        name: profile?.name || session.user.email.split('@')[0],
+        plan: profile?.plan || 'starter',
+      };
+    } catch (e) {
+      console.error('getSession error:', e);
+      return null;
+    }
   },
 
   logout: async () => {
-    await supabase.auth.signOut();
+    if (!supabase) return localAuth.logout();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.error('logout error:', e);
+    }
   },
 
   updateName: async (email, newName) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: 'not logged in' };
+    if (!supabase) return localAuth.updateName(email, newName);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return { error: 'not logged in' };
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({ name: newName })
-      .eq('id', user.id);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ name: newName })
+        .eq('id', user.id);
 
-    if (error) return { error: error.message };
-    return { user: { userId: user.id, email: user.email, name: newName } };
+      if (error) return { error: error.message };
+      return { user: { userId: user.id, email: user.email, name: newName } };
+    } catch (e) {
+      console.error('updateName error:', e);
+      return { error: 'network error' };
+    }
   },
 
   changePassword: async (email, currentPw, newPw) => {
-    if (newPw.length < 6) return { error: 'new password too short (min 6)' };
-    const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password: currentPw });
-    if (loginErr) return { error: 'current password is wrong' };
-    const { error } = await supabase.auth.updateUser({ password: newPw });
-    if (error) return { error: error.message };
-    return { ok: true };
+    if (!supabase) return localAuth.changePassword(email, currentPw, newPw);
+    try {
+      if (newPw.length < 6) return { error: 'new password too short (min 6)' };
+      const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password: currentPw });
+      if (loginErr) return { error: 'current password is wrong' };
+      const { error } = await supabase.auth.updateUser({ password: newPw });
+      if (error) return { error: error.message };
+      return { ok: true };
+    } catch (e) {
+      console.error('changePassword error:', e);
+      return { error: 'network error' };
+    }
   },
 
   resetPassword: async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin,
-    });
-    if (error) return { error: error.message };
-    return { ok: true };
+    if (!supabase) return { error: 'feature not available offline' };
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin,
+      });
+      if (error) return { error: error.message };
+      return { ok: true };
+    } catch (e) {
+      return { error: 'network error' };
+    }
   },
 };
 
@@ -1481,40 +1594,51 @@ const mockAuth = supabaseAuth;
 
 /* =================================================================
    CLOUD SYNC — sync localStorage <-> Supabase app_data
+   No-op if supabase client is null (offline-safe)
 ================================================================= */
 const cloudSync = {
   pullFromCloud: async (userId) => {
-    if (!userId) return false;
-    const { data, error } = await supabase
-      .from('app_data')
-      .select('data')
-      .eq('user_id', userId)
-      .single();
-    if (error || !data) return false;
-    const cloudData = data.data || {};
-    const localStore = getStore();
-    Object.keys(cloudData).forEach(key => {
-      if (key.startsWith(`${userId}::`)) {
-        localStore[key] = cloudData[key];
-      }
-    });
-    saveStore(localStore);
-    return true;
+    if (!supabase || !userId) return false;
+    try {
+      const { data, error } = await supabase
+        .from('app_data')
+        .select('data')
+        .eq('user_id', userId)
+        .single();
+      if (error || !data) return false;
+      const cloudData = data.data || {};
+      const localStore = getStore();
+      Object.keys(cloudData).forEach(key => {
+        if (key.startsWith(`${userId}::`)) {
+          localStore[key] = cloudData[key];
+        }
+      });
+      saveStore(localStore);
+      return true;
+    } catch (e) {
+      console.error('pullFromCloud error:', e);
+      return false;
+    }
   },
 
   pushToCloud: async (userId) => {
-    if (!userId) return false;
-    const localStore = getStore();
-    const userData = {};
-    Object.keys(localStore).forEach(key => {
-      if (key.startsWith(`${userId}::`)) {
-        userData[key] = localStore[key];
-      }
-    });
-    const { error } = await supabase
-      .from('app_data')
-      .upsert({ user_id: userId, data: userData, updated_at: new Date().toISOString() });
-    return !error;
+    if (!supabase || !userId) return false;
+    try {
+      const localStore = getStore();
+      const userData = {};
+      Object.keys(localStore).forEach(key => {
+        if (key.startsWith(`${userId}::`)) {
+          userData[key] = localStore[key];
+        }
+      });
+      const { error } = await supabase
+        .from('app_data')
+        .upsert({ user_id: userId, data: userData, updated_at: new Date().toISOString() });
+      return !error;
+    } catch (e) {
+      console.error('pushToCloud error:', e);
+      return false;
+    }
   },
 
   migrateGuestData: async (userId) => {
@@ -1530,7 +1654,7 @@ const cloudSync = {
     });
     if (hasGuestData) {
       saveStore(localStore);
-      await cloudSync.pushToCloud(userId);
+      if (supabase) await cloudSync.pushToCloud(userId);
     }
     return hasGuestData;
   },
@@ -1538,13 +1662,14 @@ const cloudSync = {
 
 let _pushTimer = null;
 const debouncedPush = (userId, delay = 3000) => {
+  if (!supabase) return;
   if (_pushTimer) clearTimeout(_pushTimer);
   _pushTimer = setTimeout(() => cloudSync.pushToCloud(userId), delay);
 };
 
 const useCloudSync = (userId) => {
   useEffect(() => {
-    if (!userId) return;
+    if (!supabase || !userId) return;
     let lastData = JSON.stringify(getStore());
     const interval = setInterval(() => {
       const currentData = JSON.stringify(getStore());
@@ -5290,7 +5415,8 @@ const App = () => {
       }
     })();
 
-    // Listen cho auth events (logout từ tab khác, session expire)
+    // Listen cho auth events (chỉ khi có supabase)
+    if (!supabase) return;
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         setUser(null);
