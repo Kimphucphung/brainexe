@@ -168,6 +168,41 @@ tailwind.config = {
   @keyframes progressFill {
     from { width: 0%; }
   }
+
+  /* Tour highlight — dashed circle pulse */
+  @keyframes dashRotate {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -40; }
+  }
+  @keyframes tourPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+  @keyframes tourArrowBounce {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-6px) rotate(-12deg); }
+  }
+  @keyframes spotlightFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .tour-spotlight {
+    pointer-events: none;
+    animation: spotlightFade 0.4s ease;
+  }
+  .tour-dashed-ring circle {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3;
+    stroke-dasharray: 8 6;
+    animation: dashRotate 2s linear infinite;
+  }
+  .tour-card {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tour-arrow {
+    animation: tourArrowBounce 1.2s ease-in-out infinite;
+  }
   .animate-float { animation: float 3s ease-in-out infinite; }
   .animate-wiggle { animation: wiggle 0.4s ease-in-out infinite; }
   .animate-spin-slow { animation: spin-slow 8s linear infinite; }
@@ -762,6 +797,45 @@ const translations = {
     'micro.cancel': 'cancel',
     'micro.empty': 'no tasks to slice yet 🐾',
     'micro.aiNeeded': 'AI works better with API key set up. you can still use basic breakdown.',
+
+    // signup extras
+    'signup.birthday': 'when were you born?',
+    'signup.birthdayHelp': 'so we can wish you 🎂',
+    'signup.newsletter': "email me cool updates (it's optional!)",
+    'signup.newsletterHelp': "we'll only send the good stuff",
+    'signup.agreePolicy': "I agree to brain.exe's",
+    'signup.agreePolicyLinks': 'Terms & Privacy Policy',
+    'signup.agreeRequired': '*required to sign up',
+    'signup.mustAgree': "please agree to our Terms & Privacy first 🐾",
+    'signup.invalidBday': "let's pick a valid birthday",
+
+    // tour
+    'tour.skip': 'skip tour',
+    'tour.next': 'next →',
+    'tour.prev': '← back',
+    'tour.done': "let's go 🚀",
+    'tour.step': 'step',
+    'tour.of': 'of',
+    'tour.replay': '↻ replay tour',
+    'tour.welcome.title': "hey, you made it 🐾",
+    'tour.welcome.body': "let me show you around real quick. takes 30 seconds, promise.",
+    'tour.welcome.action': "show me the vibes",
+    'tour.progress.title': "this is your progress",
+    'tour.progress.body': "level up, earn paws 🐾, unlock cat skins. dopamine but the cute kind.",
+    'tour.pomodoro.title': "focus timer",
+    'tour.pomodoro.body': "tap start. work 25 min, break 5. customize the durations if your brain runs different (it does).",
+    'tour.tasks.title': "your tasks",
+    'tour.tasks.body': "add stuff to do here. tap the ✂️ on hover to break a scary big task into tiny doable bits.",
+    'tour.mood.title': "mood diary",
+    'tour.mood.body': "tap an emoji for today. patterns emerge over time. mochi notices.",
+    'tour.wheel.title': "wheel of chaos",
+    'tour.wheel.body': "can't decide what to start? spin it. let the universe pick.",
+    'tour.cat.title': "that's mochi 🐾",
+    'tour.cat.body': "she wanders. she reminds you to drink water. pet her by clicking.",
+    'tour.space.title': "your space",
+    'tour.space.body': "settings, account, mess level, subscription — all here. tap it whenever.",
+    'tour.done.title': "you're set 💫",
+    'tour.done.body': "if you want a cleaner look, pull the mess slider down in Settings → Appearance. retake this tour anytime from there too.",
   },
   vi: {
     'nav.features': 'tính năng',
@@ -1132,6 +1206,43 @@ const translations = {
     'micro.cancel': 'hủy',
     'micro.empty': 'chưa có task để rã 🐾',
     'micro.aiNeeded': 'AI hoạt động tốt hơn khi có API key. bạn vẫn có thể dùng rã cơ bản.',
+
+    'signup.birthday': 'sinh nhật bạn?',
+    'signup.birthdayHelp': 'để mình chúc bạn 🎂',
+    'signup.newsletter': 'gửi email update hay ho (optional thôi nhe)',
+    'signup.newsletterHelp': 'chỉ gửi mấy cái xịn',
+    'signup.agreePolicy': 'tôi đồng ý với',
+    'signup.agreePolicyLinks': 'Điều khoản & Chính sách bảo mật',
+    'signup.agreeRequired': '*bắt buộc để đăng ký',
+    'signup.mustAgree': 'check ô đồng ý trước nha 🐾',
+    'signup.invalidBday': 'chọn 1 ngày sinh hợp lệ nha',
+
+    'tour.skip': 'bỏ qua',
+    'tour.next': 'tiếp →',
+    'tour.prev': '← lùi',
+    'tour.done': 'bắt đầu thôi 🚀',
+    'tour.step': 'bước',
+    'tour.of': '/',
+    'tour.replay': '↻ xem lại tour',
+    'tour.welcome.title': 'chào, bạn đã tới 🐾',
+    'tour.welcome.body': 'để mình dẫn tour nhanh nha. 30s là xong, hứa.',
+    'tour.welcome.action': 'tour đi nào',
+    'tour.progress.title': 'đây là tiến độ của bạn',
+    'tour.progress.body': 'lên level, kiếm paws 🐾, đổi cat skins. dopamine kiểu cute, không độc hại.',
+    'tour.pomodoro.title': 'timer focus',
+    'tour.pomodoro.body': 'bấm start. 25 phút làm, 5 phút nghỉ. chỉnh được time nếu não bạn chạy khác (chắc chắn rồi).',
+    'tour.tasks.title': 'tasks của bạn',
+    'tour.tasks.body': 'add task ở đây. hover lên task để thấy ✂️ — bấm vào để rã 1 task to thành mấy task nhỏ doable.',
+    'tour.mood.title': 'mood diary',
+    'tour.mood.body': 'tap emoji cho hôm nay. theo thời gian sẽ thấy pattern. mochi để ý mọi thứ.',
+    'tour.wheel.title': 'vòng xoay chaos',
+    'tour.wheel.body': 'không biết làm gì? spin đi, để vũ trụ chọn giúp.',
+    'tour.cat.title': 'đây là mochi 🐾',
+    'tour.cat.body': 'em ấy đi quanh, nhắc uống nước. click để vuốt.',
+    'tour.space.title': 'space của bạn',
+    'tour.space.body': 'settings, account, độ messy, subscription — tất cả ở đây. tap bất cứ lúc nào.',
+    'tour.done.title': 'xong rồi 💫',
+    'tour.done.body': 'nếu muốn giao diện gọn hơn, kéo thanh độ messy xuống ở Settings → Appearance. có thể xem lại tour này từ đó luôn.',
   },
 };
 
@@ -1371,16 +1482,26 @@ const hashPassword = (pw) => {
 };
 
 const mockAuth = {
-  signup: (email, password, name) => {
+  signup: (email, password, name, extras = {}) => {
     const store = getStore();
     const users = store['__users'] || {};
     if (users[email]) return { error: 'email already exists' };
     const userId = `u_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    users[email] = { userId, email, name, pw: hashPassword(password), createdAt: Date.now() };
+    users[email] = {
+      userId,
+      email,
+      name,
+      pw: hashPassword(password),
+      createdAt: Date.now(),
+      birthday: extras.birthday || null,
+      newsletter: !!extras.newsletter,
+      agreedToTerms: true,
+      agreedAt: Date.now(),
+    };
     store['__users'] = users;
     store['__session'] = { userId, email, name };
     saveStore(store);
-    return { user: { userId, email, name } };
+    return { user: { userId, email, name, birthday: extras.birthday || null, newsletter: !!extras.newsletter } };
   },
   login: (email, password) => {
     const store = getStore();
@@ -2102,25 +2223,39 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
 /* =================================================================
    AUTH PAGE
 ================================================================= */
-const AuthPage = ({ onSuccess, onSkip, lang, setLang }) => {
+const AuthPage = ({ onSuccess, onSkip, lang, setLang, onShowPolicy, onShowTerms }) => {
   const t = useT(lang);
   const [mode, setMode] = useState('login'); // login | signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [newsletter, setNewsletter] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
   const [showPw, setShowPw] = useState(false);
 
+  const today = new Date().toISOString().split('T')[0];
+  const minBirthday = '1900-01-01';
+
   const handleSubmit = () => {
     setError('');
-    if (!email || !password) { setError('email + password required'); return; }
-    if (!email.includes('@')) { setError('please use a valid email'); return; }
-    if (password.length < 4) { setError('password too short (min 4 chars)'); return; }
-    if (mode === 'signup' && !name) { setError('what should we call you?'); return; }
+    if (!email || !password) { setError(lang === 'vi' ? 'cần email + mật khẩu' : 'email + password required'); return; }
+    if (!email.includes('@')) { setError(lang === 'vi' ? 'email không hợp lệ' : 'please use a valid email'); return; }
+    if (password.length < 4) { setError(lang === 'vi' ? 'mật khẩu quá ngắn (tối thiểu 4 ký tự)' : 'password too short (min 4 chars)'); return; }
+    if (mode === 'signup') {
+      if (!name) { setError(lang === 'vi' ? 'bạn tên gì nhỉ?' : 'what should we call you?'); return; }
+      if (!birthday) { setError(t('signup.invalidBday')); return; }
+      const bdayDate = new Date(birthday);
+      if (isNaN(bdayDate.getTime()) || bdayDate > new Date()) { setError(t('signup.invalidBday')); return; }
+      if (!agreed) { setError(t('signup.mustAgree')); return; }
+    }
 
-    const result = mode === 'login' ? mockAuth.login(email, password) : mockAuth.signup(email, password, name);
+    const result = mode === 'login'
+      ? mockAuth.login(email, password)
+      : mockAuth.signup(email, password, name, { birthday, newsletter });
     if (result.error) { setError(result.error); return; }
-    onSuccess(result.user);
+    onSuccess(result.user, mode === 'signup');
   };
 
   return (
@@ -2128,19 +2263,19 @@ const AuthPage = ({ onSuccess, onSkip, lang, setLang }) => {
       <div className="blob" style={{ width: 300, height: 300, background: 'var(--accent)', top: -50, right: -50 }}/>
       <div className="blob" style={{ width: 200, height: 200, background: 'var(--accent-soft)', bottom: -50, left: -50 }}/>
 
-      <div className="absolute top-4 right-4 flex gap-2">
+      <div className="absolute top-4 right-4 flex gap-2 z-10">
         <select value={lang} onChange={e => setLang(e.target.value)} className="paper-sm px-2 py-1 text-xs font-mono bg-transparent">
           <option value="en">EN</option>
           <option value="vi">VI</option>
         </select>
       </div>
 
-      <div className="paper-lg p-8 max-w-md w-full relative">
+      <div className="paper-lg p-6 sm:p-8 max-w-md w-full relative my-12">
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 animate-float">
           <Cat mood={mode === 'signup' ? 'party' : 'idle'} size={70}/>
         </div>
 
-        <div className="mt-12 text-center mb-6">
+        <div className="mt-10 text-center mb-5">
           <h1 className="font-display text-4xl">{mode === 'login' ? t('auth.welcome') : t('auth.welcomeNew')}</h1>
           <p className="text-sm opacity-60 mt-1">{mode === 'login' ? t('auth.loginSub') : t('auth.signupSub')}</p>
         </div>
@@ -2187,6 +2322,70 @@ const AuthPage = ({ onSuccess, onSkip, lang, setLang }) => {
               </button>
             </div>
           </div>
+
+          {mode === 'signup' && (
+            <>
+              <div>
+                <div className="text-xs font-mono opacity-60 mb-1">{t('signup.birthday')}</div>
+                <input
+                  type="date"
+                  value={birthday}
+                  onChange={e => setBirthday(e.target.value)}
+                  max={today}
+                  min={minBirthday}
+                  className="w-full paper-sm px-3 py-2.5 text-sm bg-transparent outline-none font-mono"
+                  style={{ background: 'var(--paper)', colorScheme: 'light' }}
+                />
+                <div className="text-[10px] font-mono opacity-50 mt-1">{t('signup.birthdayHelp')}</div>
+              </div>
+
+              {/* Newsletter — optional */}
+              <label className="paper-sm p-3 flex items-start gap-3 cursor-pointer" style={{ background: 'var(--paper)' }}>
+                <div
+                  className={`custom-check mt-0.5 ${newsletter ? 'checked' : ''}`}
+                  onClick={() => setNewsletter(!newsletter)}
+                >
+                  {newsletter && <Icon name="check" size={14} className="text-white"/>}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm leading-tight">{t('signup.newsletter')}</div>
+                  <div className="text-[10px] font-mono opacity-60 mt-0.5">{t('signup.newsletterHelp')}</div>
+                </div>
+                <span className="text-[10px] font-mono opacity-50 px-1.5 py-0.5 paper-sm" style={{ background: 'var(--bg-secondary)' }}>opt</span>
+              </label>
+
+              {/* Policy — required */}
+              <label className="paper-sm p-3 flex items-start gap-3 cursor-pointer" style={{ background: agreed ? 'var(--accent-soft)' : 'var(--paper)' }}>
+                <div
+                  className={`custom-check mt-0.5 ${agreed ? 'checked' : ''}`}
+                  onClick={() => setAgreed(!agreed)}
+                >
+                  {agreed && <Icon name="check" size={14} className="text-white"/>}
+                </div>
+                <div className="flex-1 text-sm leading-tight">
+                  {t('signup.agreePolicy')}{' '}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onShowTerms && onShowTerms(); }}
+                    className="underline font-medium hover:opacity-70"
+                  >
+                    {lang === 'vi' ? 'Điều khoản' : 'Terms'}
+                  </button>
+                  {' & '}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onShowPolicy && onShowPolicy(); }}
+                    className="underline font-medium hover:opacity-70"
+                  >
+                    {lang === 'vi' ? 'Chính sách bảo mật' : 'Privacy Policy'}
+                  </button>
+                  <div className="text-[10px] font-mono opacity-60 mt-0.5" style={{ color: 'var(--accent)' }}>
+                    {t('signup.agreeRequired')}
+                  </div>
+                </div>
+              </label>
+            </>
+          )}
 
           {error && (
             <div className="paper-sm p-2 text-xs text-center" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
@@ -2495,7 +2694,7 @@ const PomodoroTimer = ({ userId, messy, lang, onPomoDone }) => {
   const secs = secondsLeft % 60;
 
   return (
-    <div className={`paper p-6 sm:p-8 ${messy >= 4 ? 'messy-rotate-2' : ''}`}>
+    <div className={`paper p-6 sm:p-8 ${messy >= 4 ? 'messy-rotate-2' : ''}`} data-tour="pomodoro">
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('pomo.label')}</div>
@@ -2611,7 +2810,7 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenM
   }, [tasks, filter]);
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`} data-tour="tasks">
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('tasks.label')}</div>
@@ -2767,7 +2966,7 @@ const MoodDiary = ({ userId, messy, lang, onMoodLogged }) => {
   };
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`} data-tour="mood">
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('mood.label')}</div>
         <div className="font-display text-2xl">{t('mood.title')}</div>
@@ -2867,7 +3066,7 @@ const RandomWheel = ({ tasks, messy, lang }) => {
   };
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`}>
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`} data-tour="wheel">
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('wheel.label')}</div>
         <div className="font-display text-2xl">{t('wheel.title')}</div>
@@ -3776,7 +3975,7 @@ const ProgressCard = ({ rewardsState, lang, messy, onOpenShop, onOpenAchievement
   const progress = (currentLevelXp / nextLevelXp) * 100;
 
   return (
-    <div className="paper p-5" style={getMessyStyle(messy, 3)}>
+    <div className="paper p-5" style={getMessyStyle(messy, 3)} data-tour="progress">
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('rewards.label')}</div>
@@ -4294,6 +4493,240 @@ Example format: ["step 1", "step 2", "step 3"]`;
 };
 
 /* =================================================================
+   ONBOARDING TOUR — dotted-circle highlight + step-by-step
+================================================================= */
+const OnboardingTour = ({ steps, onFinish, lang }) => {
+  const t = useT(lang);
+  const { play } = useSound();
+  const [stepIdx, setStepIdx] = useState(0);
+  const [targetRect, setTargetRect] = useState(null);
+  const [showCard, setShowCard] = useState(true);
+
+  const step = steps[stepIdx];
+
+  // measure target element
+  useEffect(() => {
+    if (!step) return;
+    if (!step.target) {
+      // welcome / done — no target
+      setTargetRect(null);
+      return;
+    }
+    const measure = () => {
+      const el = document.querySelector(step.target);
+      if (!el) {
+        setTargetRect(null);
+        return;
+      }
+      // scroll into view
+      const rect = el.getBoundingClientRect();
+      if (rect.top < 80 || rect.bottom > window.innerHeight - 100) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      // re-measure after scroll
+      setTimeout(() => {
+        const r = el.getBoundingClientRect();
+        setTargetRect({
+          left: r.left,
+          top: r.top,
+          right: r.right,
+          bottom: r.bottom,
+          width: r.width,
+          height: r.height,
+          centerX: r.left + r.width / 2,
+          centerY: r.top + r.height / 2,
+        });
+      }, 400);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure, true);
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure, true);
+    };
+  }, [stepIdx, step]);
+
+  const next = () => {
+    play();
+    if (stepIdx < steps.length - 1) {
+      setStepIdx(stepIdx + 1);
+    } else {
+      play('success');
+      onFinish();
+    }
+  };
+
+  const prev = () => {
+    play();
+    if (stepIdx > 0) setStepIdx(stepIdx - 1);
+  };
+
+  const skip = () => {
+    play('pop');
+    onFinish();
+  };
+
+  if (!step) return null;
+
+  // compute card position
+  let cardStyle = {};
+  if (targetRect) {
+    const cardWidth = Math.min(340, window.innerWidth - 32);
+    const cardHeight = 200; // estimate
+    const padding = 24;
+    // try below target
+    if (targetRect.bottom + padding + cardHeight < window.innerHeight) {
+      cardStyle = {
+        top: targetRect.bottom + padding,
+        left: Math.max(16, Math.min(targetRect.centerX - cardWidth / 2, window.innerWidth - cardWidth - 16)),
+      };
+    } else if (targetRect.top - padding - cardHeight > 0) {
+      // above
+      cardStyle = {
+        bottom: window.innerHeight - targetRect.top + padding,
+        left: Math.max(16, Math.min(targetRect.centerX - cardWidth / 2, window.innerWidth - cardWidth - 16)),
+      };
+    } else {
+      // center
+      cardStyle = {
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+      };
+    }
+    cardStyle.width = cardWidth;
+  } else {
+    // centered for welcome/done
+    cardStyle = {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: Math.min(360, window.innerWidth - 32),
+    };
+  }
+
+  // dashed circle radius
+  let ringRadius = 0;
+  let ringCx = 0;
+  let ringCy = 0;
+  if (targetRect) {
+    ringRadius = Math.max(targetRect.width, targetRect.height) / 2 + 16;
+    ringCx = targetRect.centerX;
+    ringCy = targetRect.centerY;
+  }
+
+  return (
+    <div className="fixed inset-0 z-[80] tour-spotlight" style={{ pointerEvents: 'auto' }}>
+      {/* dim backdrop with cutout */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ width: '100vw', height: '100vh' }}>
+        <defs>
+          <mask id="tour-mask">
+            <rect width="100%" height="100%" fill="white"/>
+            {targetRect && (
+              <circle cx={ringCx} cy={ringCy} r={ringRadius} fill="black"/>
+            )}
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#tour-mask)"/>
+        {/* dotted ring */}
+        {targetRect && (
+          <g className="tour-dashed-ring">
+            <circle cx={ringCx} cy={ringCy} r={ringRadius + 8}/>
+            <circle cx={ringCx} cy={ringCy} r={ringRadius + 18} style={{ opacity: 0.4, animationDirection: 'reverse', animationDuration: '3s' }}/>
+          </g>
+        )}
+      </svg>
+
+      {/* card */}
+      {showCard && (
+        <div
+          className="absolute tour-card paper-lg p-5 z-[81]"
+          style={{
+            ...cardStyle,
+            pointerEvents: 'auto',
+            maxWidth: 360,
+          }}
+        >
+          {/* progress dots */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex gap-1">
+              {steps.map((_, i) => (
+                <div
+                  key={i}
+                  className="h-1.5 rounded-full transition-all"
+                  style={{
+                    width: i === stepIdx ? 24 : 6,
+                    background: i <= stepIdx ? 'var(--accent)' : 'var(--bg-secondary)',
+                  }}
+                />
+              ))}
+            </div>
+            <button onClick={skip} className="text-[10px] font-mono opacity-50 hover:opacity-100">
+              {t('tour.skip')}
+            </button>
+          </div>
+
+          {/* content */}
+          <div className="mb-4">
+            {step.emoji && <div className="text-4xl mb-2">{step.emoji}</div>}
+            <h3 className="font-display text-2xl leading-tight mb-1">{t(step.titleKey)}</h3>
+            <p className="text-sm opacity-80 leading-relaxed">{t(step.bodyKey)}</p>
+          </div>
+
+          {/* nav buttons */}
+          <div className="flex gap-2">
+            {stepIdx > 0 && (
+              <button
+                onClick={prev}
+                className="paper-sm btn-press px-3 py-2 text-xs font-mono"
+              >
+                {t('tour.prev')}
+              </button>
+            )}
+            <button
+              onClick={next}
+              className="flex-1 paper-sm btn-press py-2 text-xs font-mono shine-btn"
+              style={{ background: 'var(--accent)', color: 'var(--paper)' }}
+            >
+              {stepIdx === steps.length - 1 ? t('tour.done') : t('tour.next')}
+            </button>
+          </div>
+
+          <div className="text-[10px] font-mono opacity-40 text-center mt-2">
+            {t('tour.step')} {stepIdx + 1} {t('tour.of')} {steps.length}
+          </div>
+        </div>
+      )}
+
+      {/* squiggly arrow pointing from card to target */}
+      {targetRect && showCard && (
+        <svg
+          className="absolute pointer-events-none z-[80]"
+          style={{
+            left: 0,
+            top: 0,
+            width: '100vw',
+            height: '100vh',
+          }}
+        >
+          <text
+            x={ringCx + ringRadius + 24}
+            y={ringCy - ringRadius - 8}
+            fontFamily="Instrument Serif, serif"
+            fontSize="20"
+            fill="var(--accent)"
+            style={{ filter: 'drop-shadow(0 1px 0 white)' }}
+          >
+            ✨
+          </text>
+        </svg>
+      )}
+    </div>
+  );
+};
+
+/* =================================================================
    SPACE SETTINGS MODAL
 ================================================================= */
 const SpaceSettingsModal = ({
@@ -4306,6 +4739,7 @@ const SpaceSettingsModal = ({
   plan, setShowWizard, setShowUpgrade, setOverlayPage,
   exportData, importData, fileInputRef,
   onUserUpdate, onLogout, onClose,
+  onReplayTour,
 }) => {
   const t = useT(lang);
   const { play } = useSound();
@@ -4565,6 +4999,16 @@ const SpaceSettingsModal = ({
         </button>
       </div>
 
+      {/* replay tour */}
+      <div>
+        <button
+          onClick={() => { play(); onReplayTour && onReplayTour(); onClose(); }}
+          className="w-full paper-sm btn-press py-2 text-xs font-mono"
+        >
+          {t('tour.replay')}
+        </button>
+      </div>
+
       {/* api key */}
       <div className="pt-3 border-t" style={{ borderColor: 'var(--bg-secondary)' }}>
         <div className="text-xs font-mono opacity-60 mb-1">{t('settings.api')}</div>
@@ -4717,7 +5161,22 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
   const [tab, setTab] = useState('home');
   const [showCat, setShowCat] = useUserStorage(userId, 'show_cat', true);
   const [catMessage, setCatMessage] = useState('');
+  const [tourActive, setTourActive] = useUserStorage(userId, 'tour_active', false);
+  const [tourSeen, setTourSeen] = useUserStorage(userId, 'tour_seen', false);
   const fileInputRef = useRef(null);
+
+  // Tour steps definition
+  const tourSteps = useMemo(() => [
+    { titleKey: 'tour.welcome.title', bodyKey: 'tour.welcome.body', target: null, emoji: '🐾' },
+    { titleKey: 'tour.progress.title', bodyKey: 'tour.progress.body', target: '[data-tour="progress"]', emoji: '🎮' },
+    { titleKey: 'tour.pomodoro.title', bodyKey: 'tour.pomodoro.body', target: '[data-tour="pomodoro"]', emoji: '⏱' },
+    { titleKey: 'tour.tasks.title', bodyKey: 'tour.tasks.body', target: '[data-tour="tasks"]', emoji: '📋' },
+    { titleKey: 'tour.mood.title', bodyKey: 'tour.mood.body', target: '[data-tour="mood"]', emoji: '💗' },
+    { titleKey: 'tour.wheel.title', bodyKey: 'tour.wheel.body', target: '[data-tour="wheel"]', emoji: '🎯' },
+    { titleKey: 'tour.cat.title', bodyKey: 'tour.cat.body', target: null, emoji: '🐱' },
+    { titleKey: 'tour.space.title', bodyKey: 'tour.space.body', target: '[data-tour="space"]', emoji: '⚙️' },
+    { titleKey: 'tour.done.title', bodyKey: 'tour.done.body', target: null, emoji: '💫' },
+  ], []);
 
   const completedCount = tasks.filter(tk => tk.done).length;
   const baseMessy = adhdProfile?.messy || 1;
@@ -4804,6 +5263,18 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
       }));
     }
   }, [adhdProfile]);
+
+  // auto-start tour for first-time users (after they finish quiz)
+  useEffect(() => {
+    if (adhdProfile && !tourSeen && !tourActive) {
+      // small delay so the layout settles
+      const t = setTimeout(() => {
+        setTab('home');
+        setTourActive(true);
+      }, 600);
+      return () => clearTimeout(t);
+    }
+  }, [adhdProfile, tourSeen, tourActive]);
 
   useEffect(() => {
     if (adhdProfile) {
@@ -4900,6 +5371,7 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
                 onClick={() => { soundCtx.play(); setShowSettings(true); }}
                 className="paper-sm btn-press px-3 py-2 text-xs font-mono flex items-center gap-2 max-w-[180px] truncate"
                 title={`${user?.name || 'guest'}'s Space`}
+                data-tour="space"
               >
                 <Icon name="user" size={14}/>
                 <span className="truncate">{user?.name || 'guest'}{lang === 'vi' ? "'s space" : "'s space"}</span>
@@ -5044,6 +5516,7 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
           onUserUpdate={(updated) => { setUser(updated); if (onUserUpdate) onUserUpdate(updated); }}
           onLogout={() => { soundCtx.play('pop'); onLogout(); }}
           onClose={() => setShowSettings(false)}
+          onReplayTour={() => { setTab('home'); setTourActive(true); }}
         />
       )}
 
@@ -5109,6 +5582,17 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
       {overlayPage === 'privacy' && <PrivacyPolicy onBack={() => setOverlayPage(null)} lang={lang}/>}
       {overlayPage === 'terms' && <TermsOfUse onBack={() => setOverlayPage(null)} lang={lang}/>}
       {overlayPage === 'troubleshoot' && <Troubleshooting onBack={() => setOverlayPage(null)} lang={lang}/>}
+
+      {tourActive && adhdProfile && (
+        <OnboardingTour
+          steps={tourSteps}
+          lang={lang}
+          onFinish={() => {
+            setTourActive(false);
+            setTourSeen(true);
+          }}
+        />
+      )}
     </div>
     </SoundContext.Provider>
   );
@@ -5122,6 +5606,7 @@ const App = () => {
   const [theme, setTheme] = useGlobalStorage('theme', 'light');
   const [view, setView] = useState('landing'); // landing | auth | app
   const [user, setUser] = useState(null);
+  const [authOverlay, setAuthOverlay] = useState(null); // 'privacy' | 'terms' | null
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -5152,12 +5637,18 @@ const App = () => {
 
   if (view === 'auth') {
     return (
-      <AuthPage
-        onSuccess={(u) => { setUser(u); setView('app'); }}
-        onSkip={() => { setUser(null); setView('app'); }}
-        lang={lang}
-        setLang={setLang}
-      />
+      <>
+        <AuthPage
+          onSuccess={(u) => { setUser(u); setView('app'); }}
+          onSkip={() => { setUser(null); setView('app'); }}
+          lang={lang}
+          setLang={setLang}
+          onShowPolicy={() => setAuthOverlay('privacy')}
+          onShowTerms={() => setAuthOverlay('terms')}
+        />
+        {authOverlay === 'privacy' && <PrivacyPolicy onBack={() => setAuthOverlay(null)} lang={lang}/>}
+        {authOverlay === 'terms' && <TermsOfUse onBack={() => setAuthOverlay(null)} lang={lang}/>}
+      </>
     );
   }
 
