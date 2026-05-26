@@ -530,6 +530,8 @@ const translations = {
     'tasks.upcoming': 'upcoming',
     'tasks.all': 'all',
     'tasks.empty': 'nothing yet · meow ~',
+    'tasks.date': 'date',
+    'tasks.tomorrow': 'tomorrow',
 
     // mood
     'mood.label': 'MOOD DIARY',
@@ -925,6 +927,8 @@ const translations = {
     'tasks.upcoming': 'sắp tới',
     'tasks.all': 'tất cả',
     'tasks.empty': 'chưa có task nào · meow ~',
+    'tasks.date': 'ngày',
+    'tasks.tomorrow': 'ngày mai',
 
     'mood.label': 'MOOD DIARY',
     'mood.title': 'hôm nay ổn chứ?',
@@ -1266,6 +1270,31 @@ const useGlobalStorage = (key, defaultVal) => {
   return [val, setVal];
 };
 
+const dateKey = (date = new Date()) => {
+  const d = date instanceof Date ? new Date(date) : new Date(`${date}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return dateKey(new Date());
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+};
+
+const addDays = (key, days) => {
+  const d = new Date(`${key || dateKey()}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  return dateKey(d);
+};
+
+const taskDateLabel = (key, lang) => {
+  const today = dateKey();
+  if (key === today) return lang === 'vi' ? 'hôm nay' : 'today';
+  if (key === addDays(today, 1)) return lang === 'vi' ? 'ngày mai' : 'tomorrow';
+  const d = new Date(`${key}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return key || '';
+  return d.toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
 /* =================================================================
    REWARDS ENGINE — XP, levels, paws (coins), achievements, streaks
 ================================================================= */
@@ -1379,6 +1408,9 @@ const getAudio = () => {
 };
 const playClick = (enabled, type = 'click') => {
   if (!enabled) return;
+  const now = performance.now();
+  if (type === 'click' && now - lastButtonSoundAt < 80) return;
+  lastButtonSoundAt = now;
   const ctx = getAudio();
   if (!ctx) return;
   try {
@@ -1403,6 +1435,20 @@ const playClick = (enabled, type = 'click') => {
 };
 const SoundContext = React.createContext({ enabled: true, play: () => {} });
 const useSound = () => React.useContext(SoundContext);
+
+let lastButtonSoundAt = 0;
+const useGlobalButtonSound = (enabled) => {
+  useEffect(() => {
+    if (!enabled) return;
+    const handleClick = (event) => {
+      const target = event.target?.closest?.('button, [role="button"], .custom-check');
+      if (!target || target.disabled || target.getAttribute('aria-disabled') === 'true') return;
+      playClick(true);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [enabled]);
+};
 
 /* =================================================================
    AUTH — Supabase backend with local fallback
@@ -1976,7 +2022,7 @@ const useReveal = () => {
 /* =================================================================
    LANDING PAGE
 ================================================================= */
-const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
+const Landing = ({ onEnter, onLegal = () => {}, lang, setLang, theme, setTheme }) => {
   const t = useT(lang);
   useReveal();
   const [showBlog, setShowBlog] = useState(false);
@@ -2419,6 +2465,12 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono">
+            <button onClick={() => onLegal('privacy')} className="opacity-60 hover:opacity-100 underline">
+              {t('account.privacy')}
+            </button>
+            <button onClick={() => onLegal('terms')} className="opacity-60 hover:opacity-100 underline">
+              {t('account.terms')}
+            </button>
             <div className="flex items-center gap-1">
               <Icon name="globe" size={12}/>
               <select value={lang} onChange={e => setLang(e.target.value)} className="bg-transparent">
@@ -2919,22 +2971,31 @@ const PomodoroTimer = ({ userId, messy, lang, onPomoDone }) => {
 
 const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenMicro }) => {
   const t = useT(lang);
+  const today = dateKey();
+  const tomorrow = addDays(today, 1);
   const [input, setInput] = useState('');
+  const [taskDate, setTaskDate] = useState(today);
   const [filter, setFilter] = useState('today');
   const [view, setView] = useState('list');
 
+  useEffect(() => {
+    if (filter === 'today') setTaskDate(today);
+    if (filter === 'upcoming' && taskDate <= today) setTaskDate(tomorrow);
+  }, [filter, today, tomorrow]);
+
   const addTask = () => {
     if (!input.trim()) return;
-    const today = new Date().toISOString().split('T')[0];
-    setTasks([...tasks, {
+    const selectedDate = taskDate || today;
+    setTasks(prev => [...prev, {
       id: Date.now(),
       text: input.trim(),
       done: false,
-      date: today,
+      date: selectedDate,
       created: Date.now(),
       tags: [],
     }]);
     setInput('');
+    setFilter(selectedDate > today ? 'upcoming' : 'today');
   };
 
   const toggleTask = (id) => {
@@ -2948,12 +3009,16 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenM
     setTasks(tasks.filter(tk => tk.id !== id));
   };
 
+  const updateTaskDate = (id, nextDate) => {
+    if (!nextDate) return;
+    setTasks(tasks.map(tk => tk.id === id ? { ...tk, date: nextDate } : tk));
+  };
+
   const filteredTasks = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
     if (filter === 'today') return tasks.filter(tk => tk.date === today);
     if (filter === 'upcoming') return tasks.filter(tk => tk.date > today);
     return tasks;
-  }, [tasks, filter]);
+  }, [tasks, filter, today]);
 
   return (
     <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`}>
@@ -2972,17 +3037,28 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenM
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_9.5rem_3.25rem] gap-2 mb-4">
         <input
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addTask()}
           placeholder={t('tasks.placeholder')}
-          className="flex-1 paper-sm px-3 py-2 text-sm bg-transparent outline-none"
+          className="paper-sm px-3 py-2 text-sm bg-transparent outline-none"
           style={{ background: 'var(--paper)' }}
         />
-        <button onClick={addTask} className="paper-sm btn-press px-4" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+        <label className="paper-sm px-3 py-2 flex items-center gap-2" style={{ background: 'var(--paper)' }}>
+          <Icon name="cal" size={14}/>
+          <input
+            type="date"
+            value={taskDate}
+            min={today}
+            onChange={e => setTaskDate(e.target.value)}
+            aria-label={t('tasks.date')}
+            className="w-full bg-transparent outline-none text-xs font-mono"
+          />
+        </label>
+        <button onClick={addTask} className="paper-sm btn-press px-4 flex items-center justify-center" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
           <Icon name="plus" size={16}/>
         </button>
       </div>
@@ -3010,13 +3086,23 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenM
           {filteredTasks.map((tk, i) => (
             <div
               key={tk.id}
-              className={`paper-sm p-3 flex items-center gap-3 group ${messy >= 4 ? (i % 2 ? 'messy-rotate-1' : 'messy-rotate-4') : ''}`}
+              className={`paper-sm p-3 flex flex-wrap sm:flex-nowrap items-center gap-3 group ${messy >= 4 ? (i % 2 ? 'messy-rotate-1' : 'messy-rotate-4') : ''}`}
               style={{ background: 'var(--paper)' }}
             >
               <div className={`custom-check ${tk.done ? 'checked' : ''}`} onClick={() => toggleTask(tk.id)}>
                 {tk.done && <Icon name="check" size={14} className="text-white"/>}
               </div>
-              <div className={`flex-1 text-sm ${tk.done ? 'line-through opacity-50' : ''}`}>{tk.text}</div>
+              <div className={`flex-1 min-w-[10rem] text-sm ${tk.done ? 'line-through opacity-50' : ''}`}>{tk.text}</div>
+              <label className="paper-sm px-2 py-1 flex items-center gap-1 text-[10px] font-mono opacity-70 hover:opacity-100" style={{ background: 'var(--paper)' }}>
+                <span className="hidden sm:inline whitespace-nowrap">{taskDateLabel(tk.date, lang)}</span>
+                <input
+                  type="date"
+                  value={tk.date || today}
+                  onChange={e => updateTaskDate(tk.id, e.target.value)}
+                  aria-label={t('tasks.date')}
+                  className="w-[7.5rem] bg-transparent outline-none"
+                />
+              </label>
               {!tk.done && !tk.parentId && onOpenMicro && (
                 <button
                   onClick={() => onOpenMicro(tk)}
@@ -3071,7 +3157,7 @@ const CalendarView = ({ tasks }) => {
           const day = i + 1;
           const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const hasTasks = tasksByDate[dateStr];
-          const isToday = dateStr === new Date().toISOString().split('T')[0];
+          const isToday = dateStr === dateKey();
           return (
             <div key={day} className="paper-sm aspect-square p-1 text-xs font-mono flex flex-col" style={{ background: isToday ? 'var(--accent)' : 'var(--paper)', color: isToday ? 'var(--paper)' : 'var(--fg)' }}>
               <div>{day}</div>
@@ -3194,7 +3280,7 @@ const RandomWheel = ({ tasks, messy, lang }) => {
   const [selected, setSelected] = useState(null);
   const [rotation, setRotation] = useState(0);
   const todayTasks = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = dateKey();
     return tasks.filter(tk => !tk.done && tk.date === today).slice(0, 8);
   }, [tasks]);
 
@@ -3277,7 +3363,7 @@ const Statistics = ({ userId, tasks, sessions, messy, lang }) => {
     const bars = Array.from({ length: days }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (days - 1 - i));
-      const dateStr = d.toISOString().split('T')[0];
+      const dateStr = dateKey(d);
       const count = tasks.filter(tk => tk.done && tk.date === dateStr).length;
       return { label: range === 'month' ? d.getDate() : d.toLocaleDateString('en', { weekday: 'short' }).slice(0, 2), count };
     });
@@ -3367,7 +3453,7 @@ const AIChat = ({ userId, apiKey, model, tasks, sessions, moods, messy, lang, on
 
     try {
       const context = `User context:
-- Today tasks: ${tasks.filter(tk => tk.date === new Date().toISOString().split('T')[0]).map(tk => `${tk.done ? '✓' : '○'} ${tk.text}`).join(', ') || 'none'}
+- Today tasks: ${tasks.filter(tk => tk.date === dateKey()).map(tk => `${tk.done ? '✓' : '○'} ${tk.text}`).join(', ') || 'none'}
 - Pomodoro sessions today: ${sessions}
 - Recent moods: ${(moods || []).slice(0, 3).map(m => m.mood).join(', ') || 'none'}
 - Total tasks: ${tasks.length}, completed: ${tasks.filter(tk => tk.done).length}
@@ -3461,7 +3547,7 @@ const ClueBoard = ({ tasks, moods, sessions, apiKey, model, messy, lang }) => {
     try {
       const prompt = `Generate a brief insight report for this ADHD user in ${lang === 'vi' ? 'Vietnamese' : 'English'}, genZ tone:
 - Tasks: ${tasks.length} total, ${tasks.filter(tk => tk.done).length} done
-- Today done: ${tasks.filter(tk => tk.done && tk.date === new Date().toISOString().split('T')[0]).length}
+- Today done: ${tasks.filter(tk => tk.done && tk.date === dateKey()).length}
 - Pomodoros: ${sessions}
 - Mood entries: ${moods?.length || 0}
 
@@ -5109,6 +5195,7 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
     enabled: soundEnabled,
     play: (type) => playClick(soundEnabled, type),
   }), [soundEnabled]);
+  useGlobalButtonSound(soundEnabled);
 
   // award helper — updates xp, coins, and checks for level up + new achievements
   const award = useCallback((updates) => {
@@ -5173,12 +5260,12 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
   // streak tracking — update on mount if new day
   useEffect(() => {
     if (!adhdProfile) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = dateKey();
     const lastVisit = rewardsState.lastVisit;
     if (lastVisit !== today) {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      const yesterdayStr = dateKey(yesterday);
       setRewardsState(prev => ({
         ...prev,
         lastVisit: today,
@@ -5216,7 +5303,7 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `brain-exe-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `brain-exe-backup-${dateKey()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -5505,6 +5592,9 @@ const App = () => {
   const [view, setView] = useState('landing'); // landing | auth | app
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [legalPage, setLegalPage] = useState(null);
+
+  useGlobalButtonSound(view !== 'app');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -5582,8 +5672,16 @@ const App = () => {
     );
   }
 
+  if (legalPage === 'privacy') {
+    return <PrivacyPolicy onBack={() => setLegalPage(null)} lang={lang}/>;
+  }
+
+  if (legalPage === 'terms') {
+    return <TermsOfUse onBack={() => setLegalPage(null)} lang={lang}/>;
+  }
+
   if (view === 'landing') {
-    return <Landing onEnter={handleEnterAuth} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>;
+    return <Landing onEnter={handleEnterAuth} onLegal={setLegalPage} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>;
   }
 
   if (view === 'auth') {
