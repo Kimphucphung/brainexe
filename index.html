@@ -358,9 +358,16 @@ tailwind.config = {
 <body>
 <div id="root"></div>
 
-<!-- IMPORTANT: Supabase MUST load BEFORE babel processes the script.
-     Using defer=false (default) + placing before babel ensures sync load. -->
+<!-- Supabase CDN — Load and immediately rename to avoid Babel naming conflicts.
+     window.supabase from CDN clashes with Babel's strict mode when our code references it. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+<script>
+  // Move CDN's global to a non-conflicting name BEFORE babel parses our script
+  if (typeof window !== 'undefined' && window.supabase) {
+    window.supabaseLib = window.supabase;
+    try { delete window.supabase; } catch(e) { window.supabase = undefined; }
+  }
+</script>
 <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -375,12 +382,11 @@ const SUPABASE_URL = 'https://zjjfxsyyzypvyactnyry.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqamZ4c3l5enlwdnlhY3RueXJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NjcyOTIsImV4cCI6MjA5NTM0MzI5Mn0.biectTUpeRCmftsTbMtAvZ03H48KksSAS5OH-k4925Q';
 
 // Check if Supabase SDK loaded; if not, fail gracefully (app still works in local-only mode)
-// IMPORTANT: use 'sb' not 'supabase' as local var name — window.supabase is the CDN-loaded global,
-// using same name causes "Identifier already declared" SyntaxError on production (Babel strict mode).
+// We renamed window.supabase -> window.supabaseLib at the top to avoid Babel naming conflicts.
 let sb = null;
 try {
-  if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  if (typeof window !== 'undefined' && window.supabaseLib && window.supabaseLib.createClient) {
+    sb = window.supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
