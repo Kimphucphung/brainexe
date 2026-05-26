@@ -432,7 +432,7 @@ const translations = {
     'features.4.title': 'task wheel',
     'features.4.body': 'cannot decide what to do first? spin the wheel. let chaos pick.',
     'features.5.title': 'AI assistant',
-    'features.5.body': 'powered by gemini. summarizes your week, spots patterns, validates feelings — never preaches.',
+    'features.5.body': 'built-in AI summarizes your week, spots patterns, validates feelings — never preaches.',
     'features.6.title': 'tiny garden',
     'features.6.body': 'every task you finish blooms a flower. delicate dopamine, not toxic gamification.',
     'how.title': 'how it works',
@@ -602,9 +602,9 @@ const translations = {
     'settings.export': '💾 EXPORT MY DATA',
     'settings.import': '📥 IMPORT DATA',
     'settings.logout': 'LOG OUT',
-    'settings.api': 'GOOGLE AI STUDIO API KEY',
-    'settings.apiHelp': 'needed to chat with mochi · stored locally',
-    'settings.apiSetup': 'how to get a key? (2 min)',
+    'settings.api': 'OPTIONAL PERSONAL API KEY',
+    'settings.apiHelp': 'fallback only · built-in AI works when server is configured',
+    'settings.apiSetup': 'use my own key',
     'settings.model': 'MODEL',
     'settings.modelHelp': 'if "model not found" → try another',
     'settings.test': '🧪 TEST CONNECTION',
@@ -621,8 +621,8 @@ const translations = {
     'settings.clearChat': '🗑️ CLEAR CHAT HISTORY',
 
     // api wizard
-    'wizard.title': 'set up AI chat in 2 minutes',
-    'wizard.sub': 'mochi needs a free API key from Google to chat with you',
+    'wizard.title': 'optional personal AI key',
+    'wizard.sub': 'only needed if built-in AI is unavailable or you want to use your own quota',
     'wizard.step1.title': 'open Google AI Studio',
     'wizard.step1.body': 'go to aistudio.google.com/api-keys. log in with any Google account.',
     'wizard.step1.btn': 'open in new tab →',
@@ -834,7 +834,7 @@ const translations = {
     'features.4.title': 'vòng xoay task',
     'features.4.body': 'không biết làm gì trước? spin cái wheel. để vũ trụ chọn giùm.',
     'features.5.title': 'trợ lý AI',
-    'features.5.body': 'powered by gemini. summarize tuần, spot pattern, validate cảm xúc — không bao giờ giảng đạo.',
+    'features.5.body': 'AI tích hợp sẵn: summarize tuần, spot pattern, validate cảm xúc — không bao giờ giảng đạo.',
     'features.6.title': 'vườn nhỏ',
     'features.6.body': 'mỗi task done = 1 bông hoa nở. dopamine nhẹ nhàng, không phải gamification độc hại.',
     'how.title': 'cách hoạt động',
@@ -990,9 +990,9 @@ const translations = {
     'settings.export': '💾 EXPORT DỮ LIỆU',
     'settings.import': '📥 IMPORT DỮ LIỆU',
     'settings.logout': 'ĐĂNG XUẤT',
-    'settings.api': 'GOOGLE AI STUDIO API KEY',
-    'settings.apiHelp': 'cần để chat với mochi · lưu trên máy bạn',
-    'settings.apiSetup': 'cách lấy key? (2 phút)',
+    'settings.api': 'API KEY CÁ NHÂN TÙY CHỌN',
+    'settings.apiHelp': 'chỉ là fallback · AI tích hợp dùng được khi server đã cấu hình',
+    'settings.apiSetup': 'dùng key riêng của tôi',
     'settings.model': 'MODEL',
     'settings.modelHelp': 'nếu lỗi "model not found" → đổi cái khác',
     'settings.test': '🧪 TEST CONNECTION',
@@ -1008,8 +1008,8 @@ const translations = {
     'settings.catOff': 'OFF · mochi đang ngủ',
     'settings.clearChat': '🗑️ XÓA LỊCH SỬ CHAT',
 
-    'wizard.title': 'setup AI chat trong 2 phút',
-    'wizard.sub': 'mochi cần 1 API key miễn phí từ Google để nói chuyện với bạn',
+    'wizard.title': 'API key cá nhân tùy chọn',
+    'wizard.sub': 'chỉ cần nếu AI tích hợp chưa bật hoặc bạn muốn dùng quota riêng',
     'wizard.step1.title': 'mở Google AI Studio',
     'wizard.step1.body': 'vào aistudio.google.com/api-keys. đăng nhập bằng tài khoản Google bất kỳ.',
     'wizard.step1.btn': 'mở tab mới →',
@@ -1792,6 +1792,27 @@ const analytics = {
       }
     }, 0);
   },
+};
+
+const callServerAI = async ({ mode, prompt, lang }) => {
+  if (!sb) return { ok: false, error: 'supabase unavailable' };
+  try {
+    const { data, error } = await sb.functions.invoke('ai-assistant', {
+      body: {
+        mode,
+        prompt,
+        lang,
+        path: window.location.pathname,
+      },
+    });
+    if (error) return { ok: false, error: error.message || 'server ai unavailable' };
+    if (data?.error) return { ok: false, error: data.error };
+    const text = data?.text || data?.reply || '';
+    if (!text) return { ok: false, error: 'empty server ai response' };
+    return { ok: true, text };
+  } catch (e) {
+    return { ok: false, error: e.message || 'server ai unavailable' };
+  }
 };
 
 /* =================================================================
@@ -3445,12 +3466,6 @@ const AIChat = ({ userId, apiKey, model, tasks, sessions, moods, messy, lang, on
     setMessages(prev => [...prev, { role: 'user', text }]);
     setLoading(true);
 
-    if (!apiKey) {
-      setMessages(prev => [...prev, { role: 'cat', text: lang === 'vi' ? 'mèo cần API key để chat ~ click nút bên dưới để setup nhé 🐾' : 'i need an API key to chat ~ click below to set it up 🐾', needSetup: true }]);
-      setLoading(false);
-      return;
-    }
-
     try {
       const context = `User context:
 - Today tasks: ${tasks.filter(tk => tk.date === dateKey()).map(tk => `${tk.done ? '✓' : '○'} ${tk.text}`).join(', ') || 'none'}
@@ -3459,6 +3474,25 @@ const AIChat = ({ userId, apiKey, model, tasks, sessions, moods, messy, lang, on
 - Total tasks: ${tasks.length}, completed: ${tasks.filter(tk => tk.done).length}
 
 You are Mochi, a friendly cat assistant for an ADHD-focused productivity app. Reply in ${lang === 'vi' ? 'Vietnamese' : 'English'}, casual genZ tone, short messages (2-4 sentences max), use cat emojis sparingly. Be supportive, gentle, validate emotions. User said: "${text}"`;
+
+      const serverReply = await callServerAI({ mode: 'chat', prompt: context, lang });
+      if (serverReply.ok) {
+        setMessages(prev => [...prev, { role: 'cat', text: serverReply.text }]);
+        setLoading(false);
+        return;
+      }
+
+      if (!apiKey) {
+        setMessages(prev => [...prev, {
+          role: 'cat',
+          text: lang === 'vi'
+            ? 'AI tích hợp chưa được bật trên server. Bạn có thể dùng key cá nhân tạm thời, hoặc thử lại sau.'
+            : 'Built-in AI is not enabled on the server yet. You can use a personal key for now, or try again later.',
+          needSetup: true,
+        }]);
+        setLoading(false);
+        return;
+      }
 
       const modelName = model || 'gemini-2.5-flash';
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
@@ -3542,7 +3576,6 @@ const ClueBoard = ({ tasks, moods, sessions, apiKey, model, messy, lang }) => {
   const [loading, setLoading] = useState(false);
 
   const generateReport = async () => {
-    if (!apiKey) { setReport(lang === 'vi' ? 'cần API key ~ vào Settings nhé' : 'API key needed ~ check Settings'); return; }
     setLoading(true);
     try {
       const prompt = `Generate a brief insight report for this ADHD user in ${lang === 'vi' ? 'Vietnamese' : 'English'}, genZ tone:
@@ -3552,6 +3585,21 @@ const ClueBoard = ({ tasks, moods, sessions, apiKey, model, messy, lang }) => {
 - Mood entries: ${moods?.length || 0}
 
 Give 3 short insights and 1 actionable suggestion. Max 150 words. Be warm, never preachy.`;
+
+      const serverReply = await callServerAI({ mode: 'report', prompt, lang });
+      if (serverReply.ok) {
+        setReport(serverReply.text);
+        setLoading(false);
+        return;
+      }
+
+      if (!apiKey) {
+        setReport(lang === 'vi'
+          ? 'AI tích hợp chưa được bật trên server. Nếu cần dùng ngay, vào Settings để thêm key cá nhân tạm thời.'
+          : 'Built-in AI is not enabled on the server yet. Add a personal key in Settings if you need this now.');
+        setLoading(false);
+        return;
+      }
 
       const modelName = model || 'gemini-2.5-flash';
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
@@ -4585,21 +4633,41 @@ const MicroTaskModal = ({ task, tasks, setTasks, apiKey, model, onClose, lang, o
     setError('');
     setMicroTasks([]);
 
-    if (!apiKey) {
-      // fallback to rule-based
-      setTimeout(() => {
-        setMicroTasks(ruleBreakdown(task.text));
-        setLoading(false);
-      }, 600);
-      return;
-    }
+    const applyReply = (reply) => {
+      const cleaned = reply.replace(/```json|```/g, '').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMicroTasks(parsed.slice(0, 5).map(String));
+          return true;
+        }
+      } catch {}
+      const lines = cleaned.split('\n').map(l => l.replace(/^[-*\d.)\s]+/, '').trim()).filter(l => l.length > 0 && l.length < 200);
+      if (lines.length >= 2) {
+        setMicroTasks(lines.slice(0, 5));
+        return true;
+      }
+      return false;
+    };
 
-    try {
-      const prompt = `Break down this task into 3-5 very small, concrete, doable micro-steps for someone with ADHD. Each step should take 5-15 minutes max. Respond ONLY with a JSON array of strings, nothing else. No markdown, no code fences, no explanation. Language: ${lang === 'vi' ? 'Vietnamese, casual genZ tone' : 'English, casual genZ tone'}.
+    const prompt = `Break down this task into 3-5 very small, concrete, doable micro-steps for someone with ADHD. Each step should take 5-15 minutes max. Respond ONLY with a JSON array of strings, nothing else. No markdown, no code fences, no explanation. Language: ${lang === 'vi' ? 'Vietnamese, casual genZ tone' : 'English, casual genZ tone'}.
 
 Task: "${task.text}"
 
 Example format: ["step 1", "step 2", "step 3"]`;
+
+    try {
+      const serverReply = await callServerAI({ mode: 'micro_tasks', prompt, lang });
+      if (serverReply.ok && applyReply(serverReply.text)) {
+        setLoading(false);
+        return;
+      }
+
+      if (!apiKey) {
+        setMicroTasks(ruleBreakdown(task.text));
+        setLoading(false);
+        return;
+      }
 
       const modelName = model || 'gemini-2.5-flash';
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
@@ -4615,24 +4683,7 @@ Example format: ["step 1", "step 2", "step 3"]`;
         return;
       }
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      // try to parse JSON
-      const cleaned = reply.replace(/```json|```/g, '').trim();
-      try {
-        const parsed = JSON.parse(cleaned);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMicroTasks(parsed.slice(0, 5).map(String));
-        } else {
-          throw new Error('not array');
-        }
-      } catch {
-        // try to extract lines from non-JSON response
-        const lines = cleaned.split('\n').map(l => l.replace(/^[-*\d.)\s]+/, '').trim()).filter(l => l.length > 0 && l.length < 200);
-        if (lines.length >= 2) {
-          setMicroTasks(lines.slice(0, 5));
-        } else {
-          setMicroTasks(ruleBreakdown(task.text));
-        }
-      }
+      if (!applyReply(reply)) setMicroTasks(ruleBreakdown(task.text));
     } catch (err) {
       setError(err.message);
       setMicroTasks(ruleBreakdown(task.text));
@@ -5280,19 +5331,6 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
       setCatMessage(hour < 12 ? t('app.morning') : hour < 18 ? t('app.afternoon') : t('app.evening'));
     }
   }, [adhdProfile, lang]);
-
-  // show wizard on first login if no API key
-  useEffect(() => {
-    if (adhdProfile && !apiKey && user) {
-      const store = getStore();
-      const seenKey = `${userId}::wizard_seen`;
-      if (!store[seenKey]) {
-        setShowWizard(true);
-        store[seenKey] = true;
-        saveStore(store);
-      }
-    }
-  }, [adhdProfile, apiKey, user, userId]);
 
   const exportData = () => {
     const store = getStore();
