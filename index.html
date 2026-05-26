@@ -168,41 +168,6 @@ tailwind.config = {
   @keyframes progressFill {
     from { width: 0%; }
   }
-
-  /* Tour highlight — dashed circle pulse */
-  @keyframes dashRotate {
-    from { stroke-dashoffset: 0; }
-    to { stroke-dashoffset: -40; }
-  }
-  @keyframes tourPulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; }
-  }
-  @keyframes tourArrowBounce {
-    0%, 100% { transform: translateY(0) rotate(-8deg); }
-    50% { transform: translateY(-6px) rotate(-12deg); }
-  }
-  @keyframes spotlightFade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .tour-spotlight {
-    pointer-events: none;
-    animation: spotlightFade 0.4s ease;
-  }
-  .tour-dashed-ring circle {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 3;
-    stroke-dasharray: 8 6;
-    animation: dashRotate 2s linear infinite;
-  }
-  .tour-card {
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .tour-arrow {
-    animation: tourArrowBounce 1.2s ease-in-out infinite;
-  }
   .animate-float { animation: float 3s ease-in-out infinite; }
   .animate-wiggle { animation: wiggle 0.4s ease-in-out infinite; }
   .animate-spin-slow { animation: spin-slow 8s linear infinite; }
@@ -390,12 +355,28 @@ tailwind.config = {
 <body>
 <div id="root"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+/* =================================================================
+   SUPABASE CLIENT — ⚠️ THAY 2 GIÁ TRỊ DƯỚI ĐÂY BẰNG KEY CỦA BẠN
+   Lấy ở: Supabase Dashboard → Project Settings → API
+================================================================= */
+const SUPABASE_URL = 'https://zjjfxsyyzypvyactnyry.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqamZ4c3l5enlwdnlhY3RueXJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NjcyOTIsImV4cCI6MjA5NTM0MzI5Mn0.biectTUpeRCmftsTbMtAvZ03H48KksSAS5OH-k4925Q';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  }
+});
 
 /* =================================================================
    I18N — translations
@@ -797,45 +778,6 @@ const translations = {
     'micro.cancel': 'cancel',
     'micro.empty': 'no tasks to slice yet 🐾',
     'micro.aiNeeded': 'AI works better with API key set up. you can still use basic breakdown.',
-
-    // signup extras
-    'signup.birthday': 'when were you born?',
-    'signup.birthdayHelp': 'so we can wish you 🎂',
-    'signup.newsletter': "email me cool updates (it's optional!)",
-    'signup.newsletterHelp': "we'll only send the good stuff",
-    'signup.agreePolicy': "I agree to brain.exe's",
-    'signup.agreePolicyLinks': 'Terms & Privacy Policy',
-    'signup.agreeRequired': '*required to sign up',
-    'signup.mustAgree': "please agree to our Terms & Privacy first 🐾",
-    'signup.invalidBday': "let's pick a valid birthday",
-
-    // tour
-    'tour.skip': 'skip tour',
-    'tour.next': 'next →',
-    'tour.prev': '← back',
-    'tour.done': "let's go 🚀",
-    'tour.step': 'step',
-    'tour.of': 'of',
-    'tour.replay': '↻ replay tour',
-    'tour.welcome.title': "hey, you made it 🐾",
-    'tour.welcome.body': "let me show you around real quick. takes 30 seconds, promise.",
-    'tour.welcome.action': "show me the vibes",
-    'tour.progress.title': "this is your progress",
-    'tour.progress.body': "level up, earn paws 🐾, unlock cat skins. dopamine but the cute kind.",
-    'tour.pomodoro.title': "focus timer",
-    'tour.pomodoro.body': "tap start. work 25 min, break 5. customize the durations if your brain runs different (it does).",
-    'tour.tasks.title': "your tasks",
-    'tour.tasks.body': "add stuff to do here. tap the ✂️ on hover to break a scary big task into tiny doable bits.",
-    'tour.mood.title': "mood diary",
-    'tour.mood.body': "tap an emoji for today. patterns emerge over time. mochi notices.",
-    'tour.wheel.title': "wheel of chaos",
-    'tour.wheel.body': "can't decide what to start? spin it. let the universe pick.",
-    'tour.cat.title': "that's mochi 🐾",
-    'tour.cat.body': "she wanders. she reminds you to drink water. pet her by clicking.",
-    'tour.space.title': "your space",
-    'tour.space.body': "settings, account, mess level, subscription — all here. tap it whenever.",
-    'tour.done.title': "you're set 💫",
-    'tour.done.body': "if you want a cleaner look, pull the mess slider down in Settings → Appearance. retake this tour anytime from there too.",
   },
   vi: {
     'nav.features': 'tính năng',
@@ -1206,43 +1148,6 @@ const translations = {
     'micro.cancel': 'hủy',
     'micro.empty': 'chưa có task để rã 🐾',
     'micro.aiNeeded': 'AI hoạt động tốt hơn khi có API key. bạn vẫn có thể dùng rã cơ bản.',
-
-    'signup.birthday': 'sinh nhật bạn?',
-    'signup.birthdayHelp': 'để mình chúc bạn 🎂',
-    'signup.newsletter': 'gửi email update hay ho (optional thôi nhe)',
-    'signup.newsletterHelp': 'chỉ gửi mấy cái xịn',
-    'signup.agreePolicy': 'tôi đồng ý với',
-    'signup.agreePolicyLinks': 'Điều khoản & Chính sách bảo mật',
-    'signup.agreeRequired': '*bắt buộc để đăng ký',
-    'signup.mustAgree': 'check ô đồng ý trước nha 🐾',
-    'signup.invalidBday': 'chọn 1 ngày sinh hợp lệ nha',
-
-    'tour.skip': 'bỏ qua',
-    'tour.next': 'tiếp →',
-    'tour.prev': '← lùi',
-    'tour.done': 'bắt đầu thôi 🚀',
-    'tour.step': 'bước',
-    'tour.of': '/',
-    'tour.replay': '↻ xem lại tour',
-    'tour.welcome.title': 'chào, bạn đã tới 🐾',
-    'tour.welcome.body': 'để mình dẫn tour nhanh nha. 30s là xong, hứa.',
-    'tour.welcome.action': 'tour đi nào',
-    'tour.progress.title': 'đây là tiến độ của bạn',
-    'tour.progress.body': 'lên level, kiếm paws 🐾, đổi cat skins. dopamine kiểu cute, không độc hại.',
-    'tour.pomodoro.title': 'timer focus',
-    'tour.pomodoro.body': 'bấm start. 25 phút làm, 5 phút nghỉ. chỉnh được time nếu não bạn chạy khác (chắc chắn rồi).',
-    'tour.tasks.title': 'tasks của bạn',
-    'tour.tasks.body': 'add task ở đây. hover lên task để thấy ✂️ — bấm vào để rã 1 task to thành mấy task nhỏ doable.',
-    'tour.mood.title': 'mood diary',
-    'tour.mood.body': 'tap emoji cho hôm nay. theo thời gian sẽ thấy pattern. mochi để ý mọi thứ.',
-    'tour.wheel.title': 'vòng xoay chaos',
-    'tour.wheel.body': 'không biết làm gì? spin đi, để vũ trụ chọn giúp.',
-    'tour.cat.title': 'đây là mochi 🐾',
-    'tour.cat.body': 'em ấy đi quanh, nhắc uống nước. click để vuốt.',
-    'tour.space.title': 'space của bạn',
-    'tour.space.body': 'settings, account, độ messy, subscription — tất cả ở đây. tap bất cứ lúc nào.',
-    'tour.done.title': 'xong rồi 💫',
-    'tour.done.body': 'nếu muốn giao diện gọn hơn, kéo thanh độ messy xuống ở Settings → Appearance. có thể xem lại tour này từ đó luôn.',
   },
 };
 
@@ -1469,82 +1374,187 @@ const SoundContext = React.createContext({ enabled: true, play: () => {} });
 const useSound = () => React.useContext(SoundContext);
 
 /* =================================================================
-   AUTH — mock backend (replace with Supabase later)
+   AUTH — Supabase backend
 ================================================================= */
-const hashPassword = (pw) => {
-  // simple hash for demo. PRODUCTION: use bcrypt server-side via Supabase auth.
-  let h = 0;
-  for (let i = 0; i < pw.length; i++) {
-    h = ((h << 5) - h) + pw.charCodeAt(i);
-    h |= 0;
-  }
-  return `h_${Math.abs(h).toString(36)}`;
-};
-
-const mockAuth = {
-  signup: (email, password, name, extras = {}) => {
-    const store = getStore();
-    const users = store['__users'] || {};
-    if (users[email]) return { error: 'email already exists' };
-    const userId = `u_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    users[email] = {
-      userId,
+const supabaseAuth = {
+  signup: async (email, password, name) => {
+    const { data, error } = await supabase.auth.signUp({
       email,
-      name,
-      pw: hashPassword(password),
-      createdAt: Date.now(),
-      birthday: extras.birthday || null,
-      newsletter: !!extras.newsletter,
-      agreedToTerms: true,
-      agreedAt: Date.now(),
-    };
-    store['__users'] = users;
-    store['__session'] = { userId, email, name };
-    saveStore(store);
-    return { user: { userId, email, name, birthday: extras.birthday || null, newsletter: !!extras.newsletter } };
-  },
-  login: (email, password) => {
-    const store = getStore();
-    const users = store['__users'] || {};
-    const u = users[email];
-    if (!u) return { error: 'no account found' };
-    if (u.pw !== hashPassword(password)) return { error: 'wrong password' };
-    store['__session'] = { userId: u.userId, email: u.email, name: u.name };
-    saveStore(store);
-    return { user: { userId: u.userId, email: u.email, name: u.name } };
-  },
-  getSession: () => {
-    const store = getStore();
-    return store['__session'] || null;
-  },
-  logout: () => {
-    const store = getStore();
-    delete store['__session'];
-    saveStore(store);
-  },
-  updateName: (email, newName) => {
-    const store = getStore();
-    const users = store['__users'] || {};
-    if (!users[email]) return { error: 'no account' };
-    users[email].name = newName;
-    store['__users'] = users;
-    if (store['__session']?.email === email) {
-      store['__session'].name = newName;
+      password,
+      options: { data: { name } }
+    });
+    if (error) {
+      if (error.message.includes('already registered')) return { error: 'email already exists' };
+      return { error: error.message };
     }
-    saveStore(store);
-    return { user: { ...users[email] } };
+    if (!data.user) return { error: 'signup failed' };
+    return {
+      user: {
+        userId: data.user.id,
+        email: data.user.email,
+        name: name,
+        plan: 'starter',
+      }
+    };
   },
-  changePassword: (email, currentPw, newPw) => {
-    const store = getStore();
-    const users = store['__users'] || {};
-    if (!users[email]) return { error: 'no account' };
-    if (users[email].pw !== hashPassword(currentPw)) return { error: 'current password is wrong' };
-    if (newPw.length < 4) return { error: 'new password too short' };
-    users[email].pw = hashPassword(newPw);
-    store['__users'] = users;
-    saveStore(store);
+
+  login: async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (error.message.includes('Invalid login')) return { error: 'wrong email or password' };
+      if (error.message.includes('Email not confirmed')) return { error: 'please check your email to confirm' };
+      return { error: error.message };
+    }
+    if (!data.user) return { error: 'login failed' };
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, plan')
+      .eq('id', data.user.id)
+      .single();
+
+    return {
+      user: {
+        userId: data.user.id,
+        email: data.user.email,
+        name: profile?.name || data.user.email.split('@')[0],
+        plan: profile?.plan || 'starter',
+      }
+    };
+  },
+
+  getSession: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return null;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, plan')
+      .eq('id', session.user.id)
+      .single();
+
+    return {
+      userId: session.user.id,
+      email: session.user.email,
+      name: profile?.name || session.user.email.split('@')[0],
+      plan: profile?.plan || 'starter',
+    };
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
+  },
+
+  updateName: async (email, newName) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'not logged in' };
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ name: newName })
+      .eq('id', user.id);
+
+    if (error) return { error: error.message };
+    return { user: { userId: user.id, email: user.email, name: newName } };
+  },
+
+  changePassword: async (email, currentPw, newPw) => {
+    if (newPw.length < 6) return { error: 'new password too short (min 6)' };
+    const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password: currentPw });
+    if (loginErr) return { error: 'current password is wrong' };
+    const { error } = await supabase.auth.updateUser({ password: newPw });
+    if (error) return { error: error.message };
     return { ok: true };
   },
+
+  resetPassword: async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    if (error) return { error: error.message };
+    return { ok: true };
+  },
+};
+
+// alias để giữ tương thích với code cũ
+const mockAuth = supabaseAuth;
+
+/* =================================================================
+   CLOUD SYNC — sync localStorage <-> Supabase app_data
+================================================================= */
+const cloudSync = {
+  pullFromCloud: async (userId) => {
+    if (!userId) return false;
+    const { data, error } = await supabase
+      .from('app_data')
+      .select('data')
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) return false;
+    const cloudData = data.data || {};
+    const localStore = getStore();
+    Object.keys(cloudData).forEach(key => {
+      if (key.startsWith(`${userId}::`)) {
+        localStore[key] = cloudData[key];
+      }
+    });
+    saveStore(localStore);
+    return true;
+  },
+
+  pushToCloud: async (userId) => {
+    if (!userId) return false;
+    const localStore = getStore();
+    const userData = {};
+    Object.keys(localStore).forEach(key => {
+      if (key.startsWith(`${userId}::`)) {
+        userData[key] = localStore[key];
+      }
+    });
+    const { error } = await supabase
+      .from('app_data')
+      .upsert({ user_id: userId, data: userData, updated_at: new Date().toISOString() });
+    return !error;
+  },
+
+  migrateGuestData: async (userId) => {
+    const localStore = getStore();
+    let hasGuestData = false;
+    Object.keys(localStore).forEach(key => {
+      if (key.startsWith('__guest::')) {
+        const newKey = key.replace('__guest::', `${userId}::`);
+        localStore[newKey] = localStore[key];
+        delete localStore[key];
+        hasGuestData = true;
+      }
+    });
+    if (hasGuestData) {
+      saveStore(localStore);
+      await cloudSync.pushToCloud(userId);
+    }
+    return hasGuestData;
+  },
+};
+
+let _pushTimer = null;
+const debouncedPush = (userId, delay = 3000) => {
+  if (_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(() => cloudSync.pushToCloud(userId), delay);
+};
+
+const useCloudSync = (userId) => {
+  useEffect(() => {
+    if (!userId) return;
+    let lastData = JSON.stringify(getStore());
+    const interval = setInterval(() => {
+      const currentData = JSON.stringify(getStore());
+      if (currentData !== lastData) {
+        lastData = currentData;
+        debouncedPush(userId);
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [userId]);
 };
 
 /* =================================================================
@@ -2223,39 +2233,34 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
 /* =================================================================
    AUTH PAGE
 ================================================================= */
-const AuthPage = ({ onSuccess, onSkip, lang, setLang, onShowPolicy, onShowTerms }) => {
+const AuthPage = ({ onSuccess, onSkip, lang, setLang }) => {
   const t = useT(lang);
   const [mode, setMode] = useState('login'); // login | signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [birthday, setBirthday] = useState('');
-  const [newsletter, setNewsletter] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const today = new Date().toISOString().split('T')[0];
-  const minBirthday = '1900-01-01';
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
-    if (!email || !password) { setError(lang === 'vi' ? 'cần email + mật khẩu' : 'email + password required'); return; }
-    if (!email.includes('@')) { setError(lang === 'vi' ? 'email không hợp lệ' : 'please use a valid email'); return; }
-    if (password.length < 4) { setError(lang === 'vi' ? 'mật khẩu quá ngắn (tối thiểu 4 ký tự)' : 'password too short (min 4 chars)'); return; }
-    if (mode === 'signup') {
-      if (!name) { setError(lang === 'vi' ? 'bạn tên gì nhỉ?' : 'what should we call you?'); return; }
-      if (!birthday) { setError(t('signup.invalidBday')); return; }
-      const bdayDate = new Date(birthday);
-      if (isNaN(bdayDate.getTime()) || bdayDate > new Date()) { setError(t('signup.invalidBday')); return; }
-      if (!agreed) { setError(t('signup.mustAgree')); return; }
-    }
+    if (!email || !password) { setError('email + password required'); return; }
+    if (!email.includes('@')) { setError('please use a valid email'); return; }
+    if (password.length < 6) { setError('password too short (min 6 chars)'); return; }
+    if (mode === 'signup' && !name) { setError('what should we call you?'); return; }
 
-    const result = mode === 'login'
-      ? mockAuth.login(email, password)
-      : mockAuth.signup(email, password, name, { birthday, newsletter });
-    if (result.error) { setError(result.error); return; }
-    onSuccess(result.user, mode === 'signup');
+    setSubmitting(true);
+    try {
+      const result = mode === 'login'
+        ? await mockAuth.login(email, password)
+        : await mockAuth.signup(email, password, name);
+      if (result.error) { setError(result.error); setSubmitting(false); return; }
+      onSuccess(result.user);
+    } catch (e) {
+      setError(e.message || 'network error');
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -2263,19 +2268,19 @@ const AuthPage = ({ onSuccess, onSkip, lang, setLang, onShowPolicy, onShowTerms 
       <div className="blob" style={{ width: 300, height: 300, background: 'var(--accent)', top: -50, right: -50 }}/>
       <div className="blob" style={{ width: 200, height: 200, background: 'var(--accent-soft)', bottom: -50, left: -50 }}/>
 
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
+      <div className="absolute top-4 right-4 flex gap-2">
         <select value={lang} onChange={e => setLang(e.target.value)} className="paper-sm px-2 py-1 text-xs font-mono bg-transparent">
           <option value="en">EN</option>
           <option value="vi">VI</option>
         </select>
       </div>
 
-      <div className="paper-lg p-6 sm:p-8 max-w-md w-full relative my-12">
+      <div className="paper-lg p-8 max-w-md w-full relative">
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 animate-float">
           <Cat mood={mode === 'signup' ? 'party' : 'idle'} size={70}/>
         </div>
 
-        <div className="mt-10 text-center mb-5">
+        <div className="mt-12 text-center mb-6">
           <h1 className="font-display text-4xl">{mode === 'login' ? t('auth.welcome') : t('auth.welcomeNew')}</h1>
           <p className="text-sm opacity-60 mt-1">{mode === 'login' ? t('auth.loginSub') : t('auth.signupSub')}</p>
         </div>
@@ -2323,70 +2328,6 @@ const AuthPage = ({ onSuccess, onSkip, lang, setLang, onShowPolicy, onShowTerms 
             </div>
           </div>
 
-          {mode === 'signup' && (
-            <>
-              <div>
-                <div className="text-xs font-mono opacity-60 mb-1">{t('signup.birthday')}</div>
-                <input
-                  type="date"
-                  value={birthday}
-                  onChange={e => setBirthday(e.target.value)}
-                  max={today}
-                  min={minBirthday}
-                  className="w-full paper-sm px-3 py-2.5 text-sm bg-transparent outline-none font-mono"
-                  style={{ background: 'var(--paper)', colorScheme: 'light' }}
-                />
-                <div className="text-[10px] font-mono opacity-50 mt-1">{t('signup.birthdayHelp')}</div>
-              </div>
-
-              {/* Newsletter — optional */}
-              <label className="paper-sm p-3 flex items-start gap-3 cursor-pointer" style={{ background: 'var(--paper)' }}>
-                <div
-                  className={`custom-check mt-0.5 ${newsletter ? 'checked' : ''}`}
-                  onClick={() => setNewsletter(!newsletter)}
-                >
-                  {newsletter && <Icon name="check" size={14} className="text-white"/>}
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm leading-tight">{t('signup.newsletter')}</div>
-                  <div className="text-[10px] font-mono opacity-60 mt-0.5">{t('signup.newsletterHelp')}</div>
-                </div>
-                <span className="text-[10px] font-mono opacity-50 px-1.5 py-0.5 paper-sm" style={{ background: 'var(--bg-secondary)' }}>opt</span>
-              </label>
-
-              {/* Policy — required */}
-              <label className="paper-sm p-3 flex items-start gap-3 cursor-pointer" style={{ background: agreed ? 'var(--accent-soft)' : 'var(--paper)' }}>
-                <div
-                  className={`custom-check mt-0.5 ${agreed ? 'checked' : ''}`}
-                  onClick={() => setAgreed(!agreed)}
-                >
-                  {agreed && <Icon name="check" size={14} className="text-white"/>}
-                </div>
-                <div className="flex-1 text-sm leading-tight">
-                  {t('signup.agreePolicy')}{' '}
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onShowTerms && onShowTerms(); }}
-                    className="underline font-medium hover:opacity-70"
-                  >
-                    {lang === 'vi' ? 'Điều khoản' : 'Terms'}
-                  </button>
-                  {' & '}
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onShowPolicy && onShowPolicy(); }}
-                    className="underline font-medium hover:opacity-70"
-                  >
-                    {lang === 'vi' ? 'Chính sách bảo mật' : 'Privacy Policy'}
-                  </button>
-                  <div className="text-[10px] font-mono opacity-60 mt-0.5" style={{ color: 'var(--accent)' }}>
-                    {t('signup.agreeRequired')}
-                  </div>
-                </div>
-              </label>
-            </>
-          )}
-
           {error && (
             <div className="paper-sm p-2 text-xs text-center" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
               {error}
@@ -2395,10 +2336,11 @@ const AuthPage = ({ onSuccess, onSkip, lang, setLang, onShowPolicy, onShowTerms 
 
           <button
             onClick={handleSubmit}
+            disabled={submitting}
             className="w-full paper-sm btn-press py-3 text-sm font-mono shine-btn"
-            style={{ background: 'var(--accent)', color: 'var(--paper)' }}
+            style={{ background: 'var(--accent)', color: 'var(--paper)', opacity: submitting ? 0.6 : 1 }}
           >
-            {mode === 'login' ? t('auth.login') : t('auth.signup')}
+            {submitting ? '...' : (mode === 'login' ? t('auth.login') : t('auth.signup'))}
           </button>
 
           <button
@@ -2694,7 +2636,7 @@ const PomodoroTimer = ({ userId, messy, lang, onPomoDone }) => {
   const secs = secondsLeft % 60;
 
   return (
-    <div className={`paper p-6 sm:p-8 ${messy >= 4 ? 'messy-rotate-2' : ''}`} data-tour="pomodoro">
+    <div className={`paper p-6 sm:p-8 ${messy >= 4 ? 'messy-rotate-2' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('pomo.label')}</div>
@@ -2810,7 +2752,7 @@ const TaskManager = ({ userId, tasks, setTasks, messy, lang, onTaskDone, onOpenM
   }, [tasks, filter]);
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`} data-tour="tasks">
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-3' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('tasks.label')}</div>
@@ -2966,7 +2908,7 @@ const MoodDiary = ({ userId, messy, lang, onMoodLogged }) => {
   };
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`} data-tour="mood">
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-1' : ''}`}>
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('mood.label')}</div>
         <div className="font-display text-2xl">{t('mood.title')}</div>
@@ -3066,7 +3008,7 @@ const RandomWheel = ({ tasks, messy, lang }) => {
   };
 
   return (
-    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`} data-tour="wheel">
+    <div className={`paper p-6 ${messy >= 4 ? 'messy-rotate-4' : ''}`}>
       <div className="mb-4">
         <div className="text-xs font-mono opacity-60">{t('wheel.label')}</div>
         <div className="font-display text-2xl">{t('wheel.title')}</div>
@@ -3975,7 +3917,7 @@ const ProgressCard = ({ rewardsState, lang, messy, onOpenShop, onOpenAchievement
   const progress = (currentLevelXp / nextLevelXp) * 100;
 
   return (
-    <div className="paper p-5" style={getMessyStyle(messy, 3)} data-tour="progress">
+    <div className="paper p-5" style={getMessyStyle(messy, 3)}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-xs font-mono opacity-60">{t('rewards.label')}</div>
@@ -4493,240 +4435,6 @@ Example format: ["step 1", "step 2", "step 3"]`;
 };
 
 /* =================================================================
-   ONBOARDING TOUR — dotted-circle highlight + step-by-step
-================================================================= */
-const OnboardingTour = ({ steps, onFinish, lang }) => {
-  const t = useT(lang);
-  const { play } = useSound();
-  const [stepIdx, setStepIdx] = useState(0);
-  const [targetRect, setTargetRect] = useState(null);
-  const [showCard, setShowCard] = useState(true);
-
-  const step = steps[stepIdx];
-
-  // measure target element
-  useEffect(() => {
-    if (!step) return;
-    if (!step.target) {
-      // welcome / done — no target
-      setTargetRect(null);
-      return;
-    }
-    const measure = () => {
-      const el = document.querySelector(step.target);
-      if (!el) {
-        setTargetRect(null);
-        return;
-      }
-      // scroll into view
-      const rect = el.getBoundingClientRect();
-      if (rect.top < 80 || rect.bottom > window.innerHeight - 100) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      // re-measure after scroll
-      setTimeout(() => {
-        const r = el.getBoundingClientRect();
-        setTargetRect({
-          left: r.left,
-          top: r.top,
-          right: r.right,
-          bottom: r.bottom,
-          width: r.width,
-          height: r.height,
-          centerX: r.left + r.width / 2,
-          centerY: r.top + r.height / 2,
-        });
-      }, 400);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, true);
-    return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure, true);
-    };
-  }, [stepIdx, step]);
-
-  const next = () => {
-    play();
-    if (stepIdx < steps.length - 1) {
-      setStepIdx(stepIdx + 1);
-    } else {
-      play('success');
-      onFinish();
-    }
-  };
-
-  const prev = () => {
-    play();
-    if (stepIdx > 0) setStepIdx(stepIdx - 1);
-  };
-
-  const skip = () => {
-    play('pop');
-    onFinish();
-  };
-
-  if (!step) return null;
-
-  // compute card position
-  let cardStyle = {};
-  if (targetRect) {
-    const cardWidth = Math.min(340, window.innerWidth - 32);
-    const cardHeight = 200; // estimate
-    const padding = 24;
-    // try below target
-    if (targetRect.bottom + padding + cardHeight < window.innerHeight) {
-      cardStyle = {
-        top: targetRect.bottom + padding,
-        left: Math.max(16, Math.min(targetRect.centerX - cardWidth / 2, window.innerWidth - cardWidth - 16)),
-      };
-    } else if (targetRect.top - padding - cardHeight > 0) {
-      // above
-      cardStyle = {
-        bottom: window.innerHeight - targetRect.top + padding,
-        left: Math.max(16, Math.min(targetRect.centerX - cardWidth / 2, window.innerWidth - cardWidth - 16)),
-      };
-    } else {
-      // center
-      cardStyle = {
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      };
-    }
-    cardStyle.width = cardWidth;
-  } else {
-    // centered for welcome/done
-    cardStyle = {
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: Math.min(360, window.innerWidth - 32),
-    };
-  }
-
-  // dashed circle radius
-  let ringRadius = 0;
-  let ringCx = 0;
-  let ringCy = 0;
-  if (targetRect) {
-    ringRadius = Math.max(targetRect.width, targetRect.height) / 2 + 16;
-    ringCx = targetRect.centerX;
-    ringCy = targetRect.centerY;
-  }
-
-  return (
-    <div className="fixed inset-0 z-[80] tour-spotlight" style={{ pointerEvents: 'auto' }}>
-      {/* dim backdrop with cutout */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ width: '100vw', height: '100vh' }}>
-        <defs>
-          <mask id="tour-mask">
-            <rect width="100%" height="100%" fill="white"/>
-            {targetRect && (
-              <circle cx={ringCx} cy={ringCy} r={ringRadius} fill="black"/>
-            )}
-          </mask>
-        </defs>
-        <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#tour-mask)"/>
-        {/* dotted ring */}
-        {targetRect && (
-          <g className="tour-dashed-ring">
-            <circle cx={ringCx} cy={ringCy} r={ringRadius + 8}/>
-            <circle cx={ringCx} cy={ringCy} r={ringRadius + 18} style={{ opacity: 0.4, animationDirection: 'reverse', animationDuration: '3s' }}/>
-          </g>
-        )}
-      </svg>
-
-      {/* card */}
-      {showCard && (
-        <div
-          className="absolute tour-card paper-lg p-5 z-[81]"
-          style={{
-            ...cardStyle,
-            pointerEvents: 'auto',
-            maxWidth: 360,
-          }}
-        >
-          {/* progress dots */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex gap-1">
-              {steps.map((_, i) => (
-                <div
-                  key={i}
-                  className="h-1.5 rounded-full transition-all"
-                  style={{
-                    width: i === stepIdx ? 24 : 6,
-                    background: i <= stepIdx ? 'var(--accent)' : 'var(--bg-secondary)',
-                  }}
-                />
-              ))}
-            </div>
-            <button onClick={skip} className="text-[10px] font-mono opacity-50 hover:opacity-100">
-              {t('tour.skip')}
-            </button>
-          </div>
-
-          {/* content */}
-          <div className="mb-4">
-            {step.emoji && <div className="text-4xl mb-2">{step.emoji}</div>}
-            <h3 className="font-display text-2xl leading-tight mb-1">{t(step.titleKey)}</h3>
-            <p className="text-sm opacity-80 leading-relaxed">{t(step.bodyKey)}</p>
-          </div>
-
-          {/* nav buttons */}
-          <div className="flex gap-2">
-            {stepIdx > 0 && (
-              <button
-                onClick={prev}
-                className="paper-sm btn-press px-3 py-2 text-xs font-mono"
-              >
-                {t('tour.prev')}
-              </button>
-            )}
-            <button
-              onClick={next}
-              className="flex-1 paper-sm btn-press py-2 text-xs font-mono shine-btn"
-              style={{ background: 'var(--accent)', color: 'var(--paper)' }}
-            >
-              {stepIdx === steps.length - 1 ? t('tour.done') : t('tour.next')}
-            </button>
-          </div>
-
-          <div className="text-[10px] font-mono opacity-40 text-center mt-2">
-            {t('tour.step')} {stepIdx + 1} {t('tour.of')} {steps.length}
-          </div>
-        </div>
-      )}
-
-      {/* squiggly arrow pointing from card to target */}
-      {targetRect && showCard && (
-        <svg
-          className="absolute pointer-events-none z-[80]"
-          style={{
-            left: 0,
-            top: 0,
-            width: '100vw',
-            height: '100vh',
-          }}
-        >
-          <text
-            x={ringCx + ringRadius + 24}
-            y={ringCy - ringRadius - 8}
-            fontFamily="Instrument Serif, serif"
-            fontSize="20"
-            fill="var(--accent)"
-            style={{ filter: 'drop-shadow(0 1px 0 white)' }}
-          >
-            ✨
-          </text>
-        </svg>
-      )}
-    </div>
-  );
-};
-
-/* =================================================================
    SPACE SETTINGS MODAL
 ================================================================= */
 const SpaceSettingsModal = ({
@@ -4739,7 +4447,6 @@ const SpaceSettingsModal = ({
   plan, setShowWizard, setShowUpgrade, setOverlayPage,
   exportData, importData, fileInputRef,
   onUserUpdate, onLogout, onClose,
-  onReplayTour,
 }) => {
   const t = useT(lang);
   const { play } = useSound();
@@ -4752,9 +4459,9 @@ const SpaceSettingsModal = ({
   const [pwMsg, setPwMsg] = useState('');
   const [nameMsg, setNameMsg] = useState('');
 
-  const saveName = () => {
+  const saveName = async () => {
     if (!user || !newName.trim()) return;
-    const r = mockAuth.updateName(user.email, newName.trim());
+    const r = await mockAuth.updateName(user.email, newName.trim());
     if (r.error) { setNameMsg(r.error); return; }
     onUserUpdate({ ...user, name: newName.trim() });
     setEditingName(false);
@@ -4763,10 +4470,10 @@ const SpaceSettingsModal = ({
     setTimeout(() => setNameMsg(''), 2000);
   };
 
-  const savePassword = () => {
+  const savePassword = async () => {
     if (!user) return;
     setPwMsg('');
-    const r = mockAuth.changePassword(user.email, currentPw, newPw);
+    const r = await mockAuth.changePassword(user.email, currentPw, newPw);
     if (r.error) { setPwMsg(r.error); return; }
     setCurrentPw(''); setNewPw(''); setShowPwForm(false);
     setPwMsg(t('account.updated'));
@@ -4999,16 +4706,6 @@ const SpaceSettingsModal = ({
         </button>
       </div>
 
-      {/* replay tour */}
-      <div>
-        <button
-          onClick={() => { play(); onReplayTour && onReplayTour(); onClose(); }}
-          className="w-full paper-sm btn-press py-2 text-xs font-mono"
-        >
-          {t('tour.replay')}
-        </button>
-      </div>
-
       {/* api key */}
       <div className="pt-3 border-t" style={{ borderColor: 'var(--bg-secondary)' }}>
         <div className="text-xs font-mono opacity-60 mb-1">{t('settings.api')}</div>
@@ -5161,22 +4858,7 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
   const [tab, setTab] = useState('home');
   const [showCat, setShowCat] = useUserStorage(userId, 'show_cat', true);
   const [catMessage, setCatMessage] = useState('');
-  const [tourActive, setTourActive] = useUserStorage(userId, 'tour_active', false);
-  const [tourSeen, setTourSeen] = useUserStorage(userId, 'tour_seen', false);
   const fileInputRef = useRef(null);
-
-  // Tour steps definition
-  const tourSteps = useMemo(() => [
-    { titleKey: 'tour.welcome.title', bodyKey: 'tour.welcome.body', target: null, emoji: '🐾' },
-    { titleKey: 'tour.progress.title', bodyKey: 'tour.progress.body', target: '[data-tour="progress"]', emoji: '🎮' },
-    { titleKey: 'tour.pomodoro.title', bodyKey: 'tour.pomodoro.body', target: '[data-tour="pomodoro"]', emoji: '⏱' },
-    { titleKey: 'tour.tasks.title', bodyKey: 'tour.tasks.body', target: '[data-tour="tasks"]', emoji: '📋' },
-    { titleKey: 'tour.mood.title', bodyKey: 'tour.mood.body', target: '[data-tour="mood"]', emoji: '💗' },
-    { titleKey: 'tour.wheel.title', bodyKey: 'tour.wheel.body', target: '[data-tour="wheel"]', emoji: '🎯' },
-    { titleKey: 'tour.cat.title', bodyKey: 'tour.cat.body', target: null, emoji: '🐱' },
-    { titleKey: 'tour.space.title', bodyKey: 'tour.space.body', target: '[data-tour="space"]', emoji: '⚙️' },
-    { titleKey: 'tour.done.title', bodyKey: 'tour.done.body', target: null, emoji: '💫' },
-  ], []);
 
   const completedCount = tasks.filter(tk => tk.done).length;
   const baseMessy = adhdProfile?.messy || 1;
@@ -5263,18 +4945,6 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
       }));
     }
   }, [adhdProfile]);
-
-  // auto-start tour for first-time users (after they finish quiz)
-  useEffect(() => {
-    if (adhdProfile && !tourSeen && !tourActive) {
-      // small delay so the layout settles
-      const t = setTimeout(() => {
-        setTab('home');
-        setTourActive(true);
-      }, 600);
-      return () => clearTimeout(t);
-    }
-  }, [adhdProfile, tourSeen, tourActive]);
 
   useEffect(() => {
     if (adhdProfile) {
@@ -5371,7 +5041,6 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
                 onClick={() => { soundCtx.play(); setShowSettings(true); }}
                 className="paper-sm btn-press px-3 py-2 text-xs font-mono flex items-center gap-2 max-w-[180px] truncate"
                 title={`${user?.name || 'guest'}'s Space`}
-                data-tour="space"
               >
                 <Icon name="user" size={14}/>
                 <span className="truncate">{user?.name || 'guest'}{lang === 'vi' ? "'s space" : "'s space"}</span>
@@ -5516,7 +5185,6 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
           onUserUpdate={(updated) => { setUser(updated); if (onUserUpdate) onUserUpdate(updated); }}
           onLogout={() => { soundCtx.play('pop'); onLogout(); }}
           onClose={() => setShowSettings(false)}
-          onReplayTour={() => { setTab('home'); setTourActive(true); }}
         />
       )}
 
@@ -5582,17 +5250,6 @@ const Dashboard = ({ user: initialUser, lang, setLang, theme, setTheme, onLogout
       {overlayPage === 'privacy' && <PrivacyPolicy onBack={() => setOverlayPage(null)} lang={lang}/>}
       {overlayPage === 'terms' && <TermsOfUse onBack={() => setOverlayPage(null)} lang={lang}/>}
       {overlayPage === 'troubleshoot' && <Troubleshooting onBack={() => setOverlayPage(null)} lang={lang}/>}
-
-      {tourActive && adhdProfile && (
-        <OnboardingTour
-          steps={tourSteps}
-          lang={lang}
-          onFinish={() => {
-            setTourActive(false);
-            setTourSeen(true);
-          }}
-        />
-      )}
     </div>
     </SoundContext.Provider>
   );
@@ -5606,7 +5263,7 @@ const App = () => {
   const [theme, setTheme] = useGlobalStorage('theme', 'light');
   const [view, setView] = useState('landing'); // landing | auth | app
   const [user, setUser] = useState(null);
-  const [authOverlay, setAuthOverlay] = useState(null); // 'privacy' | 'terms' | null
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -5616,20 +5273,56 @@ const App = () => {
     document.documentElement.setAttribute('lang', lang);
   }, [lang]);
 
-  // check existing session on load
+  // check existing session on load (async với Supabase)
   useEffect(() => {
-    const session = mockAuth.getSession();
-    if (session) {
-      setUser(session);
-      setView('app');
-    }
+    (async () => {
+      try {
+        const session = await mockAuth.getSession();
+        if (session) {
+          await cloudSync.pullFromCloud(session.userId);
+          setUser(session);
+          setView('app');
+        }
+      } catch (e) {
+        console.warn('session check failed', e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    // Listen cho auth events (logout từ tab khác, session expire)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setView('landing');
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    mockAuth.logout();
+  // Auto-sync khi user logged in
+  useCloudSync(user?.userId);
+
+  const handleLogout = async () => {
+    await mockAuth.logout();
     setUser(null);
     setView('landing');
   };
+
+  const handleLoginSuccess = async (u) => {
+    await cloudSync.migrateGuestData(u.userId);
+    await cloudSync.pullFromCloud(u.userId);
+    setUser(u);
+    setView('app');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+        <div className="font-display text-2xl opacity-60">brain.exe</div>
+      </div>
+    );
+  }
 
   if (view === 'landing') {
     return <Landing onEnter={() => setView('auth')} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>;
@@ -5637,18 +5330,12 @@ const App = () => {
 
   if (view === 'auth') {
     return (
-      <>
-        <AuthPage
-          onSuccess={(u) => { setUser(u); setView('app'); }}
-          onSkip={() => { setUser(null); setView('app'); }}
-          lang={lang}
-          setLang={setLang}
-          onShowPolicy={() => setAuthOverlay('privacy')}
-          onShowTerms={() => setAuthOverlay('terms')}
-        />
-        {authOverlay === 'privacy' && <PrivacyPolicy onBack={() => setAuthOverlay(null)} lang={lang}/>}
-        {authOverlay === 'terms' && <TermsOfUse onBack={() => setAuthOverlay(null)} lang={lang}/>}
-      </>
+      <AuthPage
+        onSuccess={handleLoginSuccess}
+        onSkip={() => { setUser(null); setView('app'); }}
+        lang={lang}
+        setLang={setLang}
+      />
     );
   }
 
