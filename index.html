@@ -372,10 +372,12 @@ const SUPABASE_URL = 'https://zjjfxsyyzypvyactnyry.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqamZ4c3l5enlwdnlhY3RueXJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NjcyOTIsImV4cCI6MjA5NTM0MzI5Mn0.biectTUpeRCmftsTbMtAvZ03H48KksSAS5OH-k4925Q';
 
 // Check if Supabase SDK loaded; if not, fail gracefully (app still works in local-only mode)
-let supabase = null;
+// IMPORTANT: use 'sb' not 'supabase' as local var name — window.supabase is the CDN-loaded global,
+// using same name causes "Identifier already declared" SyntaxError on production (Babel strict mode).
+let sb = null;
 try {
   if (typeof window !== 'undefined' && window.supabase && window.supabase.createClient) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -1451,9 +1453,9 @@ const localAuth = {
 
 const supabaseAuth = {
   signup: async (email, password, name) => {
-    if (!supabase) return localAuth.signup(email, password, name);
+    if (!sb) return localAuth.signup(email, password, name);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await sb.auth.signUp({
         email,
         password,
         options: { data: { name } }
@@ -1478,9 +1480,9 @@ const supabaseAuth = {
   },
 
   login: async (email, password) => {
-    if (!supabase) return localAuth.login(email, password);
+    if (!sb) return localAuth.login(email, password);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
         if (error.message.includes('Invalid login')) return { error: 'wrong email or password' };
         if (error.message.includes('Email not confirmed')) return { error: 'please check your email to confirm' };
@@ -1509,9 +1511,9 @@ const supabaseAuth = {
   },
 
   getSession: async () => {
-    if (!supabase) return localAuth.getSession();
+    if (!sb) return localAuth.getSession();
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       if (!session?.user) return null;
 
       const { data: profile } = await supabase
@@ -1533,18 +1535,18 @@ const supabaseAuth = {
   },
 
   logout: async () => {
-    if (!supabase) return localAuth.logout();
+    if (!sb) return localAuth.logout();
     try {
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
     } catch (e) {
       console.error('logout error:', e);
     }
   },
 
   updateName: async (email, newName) => {
-    if (!supabase) return localAuth.updateName(email, newName);
+    if (!sb) return localAuth.updateName(email, newName);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return { error: 'not logged in' };
 
       const { error } = await supabase
@@ -1561,12 +1563,12 @@ const supabaseAuth = {
   },
 
   changePassword: async (email, currentPw, newPw) => {
-    if (!supabase) return localAuth.changePassword(email, currentPw, newPw);
+    if (!sb) return localAuth.changePassword(email, currentPw, newPw);
     try {
       if (newPw.length < 6) return { error: 'new password too short (min 6)' };
-      const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password: currentPw });
+      const { error: loginErr } = await sb.auth.signInWithPassword({ email, password: currentPw });
       if (loginErr) return { error: 'current password is wrong' };
-      const { error } = await supabase.auth.updateUser({ password: newPw });
+      const { error } = await sb.auth.updateUser({ password: newPw });
       if (error) return { error: error.message };
       return { ok: true };
     } catch (e) {
@@ -1576,9 +1578,9 @@ const supabaseAuth = {
   },
 
   resetPassword: async (email) => {
-    if (!supabase) return { error: 'feature not available offline' };
+    if (!sb) return { error: 'feature not available offline' };
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin,
       });
       if (error) return { error: error.message };
@@ -1598,7 +1600,7 @@ const mockAuth = supabaseAuth;
 ================================================================= */
 const cloudSync = {
   pullFromCloud: async (userId) => {
-    if (!supabase || !userId) return false;
+    if (!sb || !userId) return false;
     try {
       const { data, error } = await supabase
         .from('app_data')
@@ -1622,7 +1624,7 @@ const cloudSync = {
   },
 
   pushToCloud: async (userId) => {
-    if (!supabase || !userId) return false;
+    if (!sb || !userId) return false;
     try {
       const localStore = getStore();
       const userData = {};
@@ -1662,14 +1664,14 @@ const cloudSync = {
 
 let _pushTimer = null;
 const debouncedPush = (userId, delay = 3000) => {
-  if (!supabase) return;
+  if (!sb) return;
   if (_pushTimer) clearTimeout(_pushTimer);
   _pushTimer = setTimeout(() => cloudSync.pushToCloud(userId), delay);
 };
 
 const useCloudSync = (userId) => {
   useEffect(() => {
-    if (!supabase || !userId) return;
+    if (!sb || !userId) return;
     let lastData = JSON.stringify(getStore());
     const interval = setInterval(() => {
       const currentData = JSON.stringify(getStore());
@@ -5416,8 +5418,8 @@ const App = () => {
     })();
 
     // Listen cho auth events (chỉ khi có supabase)
-    if (!supabase) return;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    if (!sb) return;
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         setUser(null);
         setView('landing');
