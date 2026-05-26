@@ -687,6 +687,10 @@ const translations = {
     'upgrade.termsUse': 'Terms of Use',
     'upgrade.removeLimits': 'Remove all limits',
     'upgrade.proSub': 'One full-featured account, no content limit. Ideal for chaotic individuals.',
+    'upgrade.comingSoon': 'payments coming soon',
+    'upgrade.comingSoonBody': 'Busy Cat and Royal Cat checkout are not open yet. You can keep using Starter now; billing will open after launch.',
+    'billing.comingSoon': 'payments coming soon',
+    'billing.comingSoonBody': 'Paid checkout is not live yet. No payment will be collected.',
 
     // troubleshoot
     'ts.title': 'subscription troubleshooting',
@@ -1065,6 +1069,10 @@ const translations = {
     'upgrade.termsUse': 'Điều khoản',
     'upgrade.removeLimits': 'Bỏ mọi giới hạn',
     'upgrade.proSub': 'Một tài khoản đầy đủ tính năng, không giới hạn content. Lý tưởng cho não lộn xộn.',
+    'upgrade.comingSoon': 'thanh toan sap mo',
+    'upgrade.comingSoonBody': 'Busy Cat va Royal Cat chua mo checkout. Ban co the dung Starter truoc; billing se mo sau launch.',
+    'billing.comingSoon': 'thanh toan sap mo',
+    'billing.comingSoonBody': 'Checkout tra phi chua live. Web se khong thu tien luc nay.',
 
     'ts.title': 'troubleshooting subscription',
     'ts.q1.title': 'Tôi đã mua subscription nhưng web không hiện giao dịch',
@@ -1694,6 +1702,53 @@ const useCloudSync = (userId) => {
 };
 
 /* =================================================================
+   ANALYTICS — optional Supabase event logging
+   Requires the analytics_events table from supabase_full_schema.sql.
+================================================================= */
+const getAnalyticsSessionId = () => {
+  const key = 'brain_exe_analytics_session';
+  try {
+    let id = sessionStorage.getItem(key);
+    if (!id) {
+      id = (window.crypto?.randomUUID && window.crypto.randomUUID()) || `s_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      sessionStorage.setItem(key, id);
+    }
+    return id;
+  } catch {
+    return `s_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+};
+
+const analytics = {
+  track: (event, properties = {}) => {
+    if (!sb || !event) return;
+    const sessionId = getAnalyticsSessionId();
+    const path = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const props = {
+      ...properties,
+      lang: document.documentElement.getAttribute('lang') || 'en',
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+    };
+
+    setTimeout(async () => {
+      try {
+        const { data: { user } } = await sb.auth.getUser();
+        await sb.from('analytics_events').insert({
+          user_id: user?.id || null,
+          session_id: sessionId,
+          event,
+          path,
+          referrer: document.referrer || null,
+          properties: props,
+        });
+      } catch {
+        // Analytics must never block the product.
+      }
+    }, 0);
+  },
+};
+
+/* =================================================================
    CAT SVG — same as before
 ================================================================= */
 const Cat = ({ mood = 'idle', size = 80 }) => {
@@ -1926,6 +1981,13 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
   useReveal();
   const [showBlog, setShowBlog] = useState(false);
   const [activeBlog, setActiveBlog] = useState(null);
+  const [billingNotice, setBillingNotice] = useState(false);
+
+  const showBillingComingSoon = (source) => {
+    analytics.track('billing_coming_soon_clicked', { source });
+    setBillingNotice(true);
+    setTimeout(() => setBillingNotice(false), 5000);
+  };
 
   const blogs = lang === 'vi' ? [
     {
@@ -1997,7 +2059,7 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
             <Cat mood="idle" size={60}/>
             <h3 className="font-display text-2xl mt-2">{t('cta.try')}</h3>
             <div className="text-xs font-mono opacity-60 mt-1 mb-4">{t('cta.noCard')}</div>
-            <button onClick={onEnter} className="paper-sm btn-press px-8 py-3 font-mono text-sm shine-btn" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+            <button onClick={() => onEnter('blog_article_cta')} className="paper-sm btn-press px-8 py-3 font-mono text-sm shine-btn" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
               {t('hero.cta')} →
             </button>
           </div>
@@ -2007,9 +2069,9 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pt-[65px] sm:pt-[68px]">
       {/* NAV */}
-      <nav className="sticky top-0 z-30 backdrop-blur-md border-b" style={{ background: 'rgba(244, 241, 236, 0.8)', borderColor: 'var(--line)' }}>
+      <nav className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md border-b" style={{ background: 'var(--bg)', borderColor: 'var(--line)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cat mood="idle" size={36}/>
@@ -2034,10 +2096,10 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
             <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} className="paper-sm btn-press p-2">
               <Icon name={theme === 'light' ? 'moon' : 'sun'} size={14}/>
             </button>
-            <button onClick={onEnter} className="paper-sm btn-press px-3 py-1.5 text-xs font-mono hidden sm:block">
+            <button onClick={() => onEnter('nav_login')} className="paper-sm btn-press px-3 py-1.5 text-xs font-mono hidden sm:block">
               {t('nav.login')}
             </button>
-            <button onClick={onEnter} className="paper-sm btn-press px-3 py-1.5 text-xs font-mono shine-btn" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+            <button onClick={() => onEnter('nav_signup')} className="paper-sm btn-press px-3 py-1.5 text-xs font-mono shine-btn" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
               {t('nav.signup')}
             </button>
           </div>
@@ -2064,7 +2126,7 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
                 {t('hero.subtitle')}
               </p>
               <div className="reveal reveal-delay-3 flex flex-wrap gap-3 mb-6">
-                <button onClick={onEnter} className="paper btn-press px-6 py-3 font-mono text-sm shine-btn flex items-center gap-2" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+                <button onClick={() => onEnter('hero_cta')} className="paper btn-press px-6 py-3 font-mono text-sm shine-btn flex items-center gap-2" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
                   {t('hero.cta')} <Icon name="arrowRight" size={16}/>
                 </button>
                 <a href="#how" className="paper-sm btn-press px-6 py-3 font-mono text-sm flex items-center gap-2">
@@ -2284,12 +2346,18 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
                     </li>
                   ))}
                 </ul>
-                <button onClick={onEnter} className="w-full paper-sm btn-press py-2.5 text-sm font-mono shine-btn" style={{ background: p.popular ? 'var(--accent)' : 'var(--paper)', color: p.popular ? 'var(--paper)' : 'var(--fg)' }}>
+                <button onClick={() => p.id === 'starter' ? onEnter('pricing_starter') : showBillingComingSoon(`pricing_${p.id}`)} className="w-full paper-sm btn-press py-2.5 text-sm font-mono shine-btn" style={{ background: p.popular ? 'var(--accent)' : 'var(--paper)', color: p.popular ? 'var(--paper)' : 'var(--fg)' }}>
                   {t('pricing.cta')}
                 </button>
               </div>
             ))}
           </div>
+          {billingNotice && (
+            <div className="paper-sm max-w-2xl mx-auto mt-6 p-4 text-center fade-in" style={{ background: 'var(--accent-soft)' }}>
+              <div className="font-display text-2xl">{t('billing.comingSoon')}</div>
+              <div className="text-xs font-mono opacity-70 mt-1">{t('billing.comingSoonBody')}</div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -2332,7 +2400,7 @@ const Landing = ({ onEnter, lang, setLang, theme, setTheme }) => {
               {lang === 'vi' ? 'sẵn sàng chưa?' : 'ready?'}
             </h2>
             <p className="text-lg opacity-80 mb-8">{t('hero.subtitle')}</p>
-            <button onClick={onEnter} className="paper-lg btn-press px-10 py-4 font-mono text-base shine-btn inline-flex items-center gap-2" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
+            <button onClick={() => onEnter('final_cta')} className="paper-lg btn-press px-10 py-4 font-mono text-base shine-btn inline-flex items-center gap-2" style={{ background: 'var(--accent)', color: 'var(--paper)' }}>
               {t('hero.cta')} <Icon name="arrowRight" size={18}/>
             </button>
             <div className="text-xs font-mono opacity-60 mt-4">{t('cta.noCard')}</div>
@@ -3542,6 +3610,7 @@ const StickerBoard = ({ userId, messy, lang }) => {
 const Billing = ({ userId, messy, lang }) => {
   const t = useT(lang);
   const [plan, setPlan] = useUserStorage(userId, 'plan', 'starter');
+  const [billingNotice, setBillingNotice] = useState(false);
 
   const plans = [
     { id: 'starter', emoji: '🐱', features: ['5 tasks/day', 'basic pomodoro', 'mood diary', '10 AI msgs/day'] },
@@ -3585,16 +3654,36 @@ const Billing = ({ userId, messy, lang }) => {
                 </li>
               ))}
             </ul>
-            <button onClick={() => setPlan(p.id)} disabled={plan === p.id} className="w-full paper-sm btn-press py-2 text-xs font-mono" style={{ background: plan === p.id ? 'var(--fg)' : (p.id === 'starter' ? 'var(--paper)' : 'var(--accent)'), color: plan === p.id ? 'var(--paper)' : (p.id === 'starter' ? 'var(--fg)' : 'var(--paper)') }}>
+            <button
+              onClick={() => {
+                if (p.id === 'starter') {
+                  setPlan(p.id);
+                  return;
+                }
+                analytics.track('billing_coming_soon_clicked', { source: `dashboard_${p.id}` });
+                setBillingNotice(true);
+                setTimeout(() => setBillingNotice(false), 5000);
+              }}
+              disabled={plan === p.id}
+              className="w-full paper-sm btn-press py-2 text-xs font-mono"
+              style={{ background: plan === p.id ? 'var(--fg)' : (p.id === 'starter' ? 'var(--paper)' : 'var(--accent)'), color: plan === p.id ? 'var(--paper)' : (p.id === 'starter' ? 'var(--fg)' : 'var(--paper)') }}
+            >
               {plan === p.id ? t('billing.active') : t('billing.choose')}
             </button>
           </div>
         ))}
       </div>
 
+      {billingNotice && (
+        <div className="paper-sm p-3 mt-4 text-center fade-in" style={{ background: 'var(--accent-soft)' }}>
+          <div className="font-display text-xl">{t('billing.comingSoon')}</div>
+          <div className="text-[10px] font-mono opacity-70 mt-1">{t('billing.comingSoonBody')}</div>
+        </div>
+      )}
+
       <div className="text-[10px] font-mono opacity-50 mt-4 text-center">
-        secure payment · momo · vnpay · stripe<br/>
-        cancel anytime · email confirmation
+        Stripe / MoMo / VNPay checkout: coming soon<br/>
+        no payment collected in this version
       </div>
     </div>
   );
@@ -3812,6 +3901,7 @@ const UpgradeSheet = ({ onClose, currentPlan, setPlan, lang }) => {
   const { play, enabled: soundEnabled } = useSound();
   const [billingCycle, setBillingCycle] = useState('yearly');
   const [showBenefits, setShowBenefits] = useState(false);
+  const [comingSoonPlan, setComingSoonPlan] = useState(null);
 
   const plans = [
     {
@@ -3848,9 +3938,15 @@ const UpgradeSheet = ({ onClose, currentPlan, setPlan, lang }) => {
   ];
 
   const handlePick = (planId) => {
-    play('success');
-    setPlan(planId);
-    setTimeout(() => onClose(), 600);
+    if (planId === 'starter') {
+      play('success');
+      setPlan(planId);
+      setTimeout(() => onClose(), 600);
+      return;
+    }
+    play('pop');
+    analytics.track('billing_coming_soon_clicked', { source: `upgrade_${planId}`, billingCycle });
+    setComingSoonPlan(planId);
   };
 
   return (
@@ -3929,6 +4025,15 @@ const UpgradeSheet = ({ onClose, currentPlan, setPlan, lang }) => {
           </div>
         </div>
 
+        {comingSoonPlan && (
+          <div className="px-4 sm:px-6 mb-6">
+            <div className="max-w-2xl mx-auto rounded-2xl p-4 text-center fade-in" style={{ background: '#fff', border: '1.5px solid #1a1a1a', boxShadow: '0 4px 0 #1a1a1a' }}>
+              <div className="font-display text-2xl">{t('upgrade.comingSoon')}</div>
+              <div className="text-xs font-mono opacity-70 mt-1">{t('upgrade.comingSoonBody')}</div>
+            </div>
+          </div>
+        )}
+
         {/* PLANS — Plans are clean (not messy) per user spec */}
         <div className="px-4 sm:px-6 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
@@ -3989,7 +4094,7 @@ const UpgradeSheet = ({ onClose, currentPlan, setPlan, lang }) => {
                       cursor: isCurrent ? 'default' : 'pointer',
                     }}
                   >
-                    {isCurrent ? (lang === 'vi' ? '✓ gói hiện tại' : '✓ current plan') : (plan.id === 'starter' ? (lang === 'vi' ? 'gói miễn phí' : 'free plan') : (lang === 'vi' ? 'Nâng cấp ngay' : 'Get this plan'))}
+                    {isCurrent ? (lang === 'vi' ? '✓ gói hiện tại' : '✓ current plan') : (plan.id === 'starter' ? (lang === 'vi' ? 'gói miễn phí' : 'free plan') : t('upgrade.comingSoon'))}
                   </button>
                 </div>
               );
@@ -5409,6 +5514,15 @@ const App = () => {
     document.documentElement.setAttribute('lang', lang);
   }, [lang]);
 
+  useEffect(() => {
+    if (loading) return;
+    analytics.track('view_changed', {
+      view,
+      signedIn: Boolean(user),
+      plan: user?.plan || 'starter',
+    });
+  }, [loading, view, user?.userId, user?.plan]);
+
   // check existing session on load (async với Supabase)
   useEffect(() => {
     (async () => {
@@ -5440,13 +5554,20 @@ const App = () => {
   // Auto-sync khi user logged in
   useCloudSync(user?.userId);
 
+  const handleEnterAuth = (source = 'unknown') => {
+    analytics.track('landing_cta_clicked', { source });
+    setView('auth');
+  };
+
   const handleLogout = async () => {
+    analytics.track('logout_clicked');
     await mockAuth.logout();
     setUser(null);
     setView('landing');
   };
 
   const handleLoginSuccess = async (u) => {
+    analytics.track('auth_success', { method: 'email' });
     await cloudSync.migrateGuestData(u.userId);
     await cloudSync.pullFromCloud(u.userId);
     setUser(u);
@@ -5462,14 +5583,14 @@ const App = () => {
   }
 
   if (view === 'landing') {
-    return <Landing onEnter={() => setView('auth')} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>;
+    return <Landing onEnter={handleEnterAuth} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>;
   }
 
   if (view === 'auth') {
     return (
       <AuthPage
         onSuccess={handleLoginSuccess}
-        onSkip={() => { setUser(null); setView('app'); }}
+        onSkip={() => { analytics.track('auth_skipped'); setUser(null); setView('app'); }}
         lang={lang}
         setLang={setLang}
       />
